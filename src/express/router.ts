@@ -99,9 +99,11 @@ export class Router {
         const only = options?.only || Object.keys(actions) as ControllerAction[]
         const except = options?.except || []
 
+        const preController = typeof controller === 'function' ? new controller() : controller
+
         for (const action of only) {
             if (except.includes(action)) continue
-            if (typeof controller[action] === 'function') {
+            if (typeof preController[action] === 'function') {
                 const { method, path } = actions[action]
                 this.add(method as HttpMethod, `${basePath}${path}`, [controller, action])
             }

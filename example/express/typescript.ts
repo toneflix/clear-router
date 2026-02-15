@@ -35,6 +35,49 @@ const validateId = (req: Request, res: Response, next: NextFunction): void => {
     next();
 };
 
+class UserController {
+    index ({ res }: HttpContext): void {
+        res.json(users);
+    }
+    show ({ req, res }: HttpContext): void {
+        const id = parseInt(req.params.id, 10);
+        const user = users.find(u => u.id === id);
+        res.json({ user });
+    }
+    create ({ req, res }: HttpContext): void {
+        const newUser: User = {
+            id: users.length + 1,
+            name: req.body.name,
+            email: req.body.email
+        };
+        users.push(newUser);
+        res.status(201).json({ user: newUser });
+    }
+    update ({ req, res }: HttpContext): void {
+        const id = parseInt(req.params.id, 10);
+        const user = users.find(u => u.id === id);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        user.name = req.body.name || user.name;
+        user.email = req.body.email || user.email;
+        res.status(202).json({ user });
+    }
+    destroy ({ req, res }: HttpContext): void {
+        const id = parseInt(req.params.id, 10);
+        const index = users.findIndex(u => u.id === id);
+        if (index === -1) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        users.splice(index, 1);
+        res.status(202).send();
+    }
+}
+
+Router.apiResource('/all/users', UserController);
+
 Router.middleware([logMiddleware], () => {
     Router.get('/', ({ res }): void => {
         res.json({
