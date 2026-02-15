@@ -1,26 +1,47 @@
-'use strict'
+import { ControllerAction, HttpMethod, RouteInfo } from "../../types/basic";
+import { Handler, Middleware } from "../../types/express";
+
+import { Router } from "express";
 
 /**
- * @module express-routing
- * @description Laravel-style routing system for Express.js with support for CommonJS, ESM, and TypeScript
+ * @class clear-router
+ * @description Laravel-style routing system for Express.js and H3 with support for CommonJS, ESM, and TypeScript
  * @author Refkinscallv
- * @repository https://github.com/refkinscallv/express-routing
- * @version 2.0.2
- * @date 2026
+ * @author 3m1n3nc3
+ * @repository https://github.com/toneflix/clear-router
  */
+export default class Routes {
+    /**
+     * All registered routes
+     */
+    static routes: Array<{
+        methods: HttpMethod[];
+        path: string;
+        handler: Handler;
+        middlewares: Middleware[];
+    }> = [];
 
-class Routes {
-    static routes = []
-    static prefix = ''
-    static groupMiddlewares = []
-    static globalMiddlewares = []
+    /**
+     * Current route prefix
+     */
+    static prefix: string = '';
+
+    /**
+     * Group-level middlewares
+     */
+    static groupMiddlewares: Middleware[] = [];
+
+    /**
+     * Global-level middlewares
+     */
+    static globalMiddlewares: Middleware[] = [];
 
     /**
      * Normalize path by removing duplicate slashes and ensuring leading slash
-     * @param {string} path - Path to normalize
-     * @returns {string} Normalized path
+     * @param path - Path to normalize
+     * @returns Normalized path
      */
-    static normalizePath(path) {
+    static normalizePath (path: string): string {
         return '/' + path
             .split('/')
             .filter(Boolean)
@@ -28,13 +49,18 @@ class Routes {
     }
 
     /**
-     * Add a route with specified HTTP methods, path, handler, and middlewares
-     * @param {string|string[]} methods - HTTP method(s) for the route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler function or [Controller, method]
-     * @param {Function[]} middlewares - Array of middleware functions
-     */
-    static add(methods, path, handler, middlewares = []) {
+      * Add a route with specified HTTP methods, path, handler, and middlewares
+      * @param methods - HTTP method(s) for the route
+      * @param path - Route path
+      * @param handler - Route handler function or controller reference
+      * @param middlewares - Array of middleware functions
+      */
+    static add (
+        methods: HttpMethod | HttpMethod[],
+        path: string,
+        handler: Handler,
+        middlewares?: Middleware[]
+    ): void {
         const methodArray = Array.isArray(methods) ? methods : [methods]
         const fullPath = this.normalizePath(`${this.prefix}/${path}`)
 
@@ -45,88 +71,120 @@ class Routes {
             middlewares: [
                 ...this.globalMiddlewares,
                 ...this.groupMiddlewares,
-                ...middlewares,
+                ...(middlewares || []),
             ],
         })
     }
 
     /**
-     * Register a GET route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * Register RESTful API resource routes for a controller with optional action filtering
+     * 
+     * @param basePath - Base path for the resource
+     * @param controller - Controller object containing action methods
+     * @param options - Optional filtering options for actions
      */
-    static get(path, handler, middlewares = []) {
+    static apiResource (
+        basePath: string,
+        controller: any,
+        options?: { only?: ControllerAction[], except?: ControllerAction[] }
+    ): void {
+        const actions = {
+            index: { method: 'get', path: '/' },
+            show: { method: 'get', path: '/:id' },
+            create: { method: 'post', path: '/' },
+            update: { method: 'put', path: '/:id' },
+            destroy: { method: 'delete', path: '/:id' },
+        } as const
+
+        const only = options?.only || Object.keys(actions) as ControllerAction[]
+        const except = options?.except || []
+
+        for (const action of only) {
+            if (except.includes(action)) continue
+            if (typeof controller[action] === 'function') {
+                const { method, path } = actions[action]
+                this.add(method as HttpMethod, `${basePath}${path}`, [controller, action])
+            }
+        }
+    }
+
+    /**
+     * Register a GET route
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
+     */
+    static get (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('get', path, handler, middlewares)
     }
 
     /**
      * Register a POST route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static post(path, handler, middlewares = []) {
+    static post (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('post', path, handler, middlewares)
     }
 
     /**
      * Register a PUT route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static put(path, handler, middlewares = []) {
+    static put (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('put', path, handler, middlewares)
     }
 
     /**
      * Register a DELETE route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static delete(path, handler, middlewares = []) {
+    static delete (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('delete', path, handler, middlewares)
     }
 
     /**
      * Register a PATCH route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static patch(path, handler, middlewares = []) {
+    static patch (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('patch', path, handler, middlewares)
     }
 
     /**
      * Register an OPTIONS route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static options(path, handler, middlewares = []) {
+    static options (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('options', path, handler, middlewares)
     }
 
     /**
      * Register a HEAD route
-     * @param {string} path - Route path
-     * @param {Function|Array} handler - Route handler
-     * @param {Function[]} middlewares - Middleware functions
+     * @param path - Route path
+     * @param handler - Route handler
+     * @param middlewares - Middleware functions
      */
-    static head(path, handler, middlewares = []) {
+    static head (path: string, handler: Handler, middlewares?: Middleware[]): void {
         this.add('head', path, handler, middlewares)
     }
 
     /**
      * Group routes with a common prefix and middlewares
-     * @param {string} prefix - URL prefix for grouped routes
-     * @param {Function} callback - Function containing route definitions
-     * @param {Function[]} middlewares - Middleware functions applied to all routes in group
+     * @param prefix - URL prefix for grouped routes
+     * @param callback - Function containing route definitions
+     * @param middlewares - Middleware functions applied to all routes in group
      */
-    static group(prefix, callback, middlewares = []) {
+    static group (prefix: string, callback: () => void, middlewares?: Middleware[]): void {
         const previousPrefix = this.prefix
         const previousMiddlewares = this.groupMiddlewares
 
@@ -135,7 +193,7 @@ class Routes {
             .join('/')
 
         this.prefix = this.normalizePath(fullPrefix)
-        this.groupMiddlewares = [...previousMiddlewares, ...middlewares]
+        this.groupMiddlewares = [...previousMiddlewares, ...(middlewares || [])]
 
         callback()
 
@@ -145,13 +203,13 @@ class Routes {
 
     /**
      * Apply global middlewares for the duration of the callback
-     * @param {Function[]} middlewares - Middleware functions
-     * @param {Function} callback - Function containing route definitions
+     * @param middlewares - Middleware functions
+     * @param callback - Function containing route definitions
      */
-    static middleware(middlewares, callback) {
+    static middleware (middlewares: Middleware[], callback: () => void): void {
         const prevMiddlewares = this.globalMiddlewares
 
-        this.globalMiddlewares = [...prevMiddlewares, ...middlewares]
+        this.globalMiddlewares = [...prevMiddlewares, ...(middlewares || [])]
 
         callback()
 
@@ -160,9 +218,9 @@ class Routes {
 
     /**
      * Get all registered routes with their information
-     * @returns {Array} Array of route information objects
+     * @returns Array of route information objects
      */
-    static allRoutes() {
+    static allRoutes (): RouteInfo[] {
         return this.routes.map(route => ({
             methods: route.methods,
             path: route.path,
@@ -175,9 +233,12 @@ class Routes {
      * Apply all registered routes to the provided Express Router instance
      * Handles controller-method binding and middleware application
      * All errors are thrown to Express error handling middleware
-     * @param {import('express').Router} router - Express Router instance
+     * 
+     * @param router - Express Router instance
      */
-    static async apply(router) {
+    static apply (router: Router): void
+    static async apply (router: Router): Promise<void>
+    static async apply (router: Router): Promise<void> {
         for (const route of this.routes) {
             let handlerFunction = null
 
@@ -211,7 +272,7 @@ class Routes {
                 } else {
                     throw new Error(`Invalid handler format for route: ${route.path}`)
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`[ROUTES] Error setting up route ${route.path}:`, error.message)
                 throw error
             }
@@ -245,7 +306,7 @@ class Routes {
                             const ctx = { req, res, next }
                             const result = handlerFunction(ctx)
                             await Promise.resolve(result)
-                        } catch (error) {
+                        } catch (error: any) {
                             next(error)
                         }
                     }
@@ -253,7 +314,4 @@ class Routes {
             }
         }
     }
-}
-
-module.exports = Routes
-module.exports.default = Routes
+} 

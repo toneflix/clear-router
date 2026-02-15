@@ -17,30 +17,49 @@ Comprehensive testing guide for @refkinscallv/express-routing
 ### Prerequisites
 
 ```bash
-npm install
+pnpm install
 ```
 
 This will install all required dependencies including:
-- jest (test framework)
+
+- vitest (test framework)
 - supertest (HTTP testing)
 - typescript & ts-node (TypeScript support)
 
 ### Configuration Files
 
-#### jest.config.js
+#### vitest.config.js
 
 ```javascript
-module.exports = {
-  testEnvironment: 'node',
-  testMatch: [
-    '**/tests/**/*.test.js',
-    '**/tests/**/*.test.mjs',
-    '**/tests/**/*.test.ts'
-  ],
-  transform: {
-    '^.+\\.ts$': 'ts-jest'
-  }
-};
+import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
+
+export default defineConfig({
+  plugins: [tsconfigPaths()],
+
+  test: {
+    retry: 10,
+    root: './',
+    passWithNoTests: true,
+    environment: 'node',
+    include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    env: {
+      NODE_ENV: 'test',
+    },
+    coverage: {
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: 'coverage',
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/cypress/**',
+        '**/.{idea,git,cache,output,temp}/**',
+        '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*',
+        '**/.h3ravel/**',
+      ],
+    },
+  },
+});
 ```
 
 #### tsconfig.json
@@ -48,15 +67,26 @@ module.exports = {
 ```json
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020"],
+    "module": "es2022",
+    "target": "es2022",
+    "lib": ["es2022", "DOM"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["node", "jest"]
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "types": ["node", "vitest", "express"],
+    "baseUrl": ".",
+    "paths": {
+      "clear-router/express": ["src/express/routes.ts"],
+      "clear-router/express/*": ["src/express/*"],
+      "clear-router/h3": ["src/h3/routes.ts"],
+      "clear-router/h3/*": ["src/h3/*"]
+    }
   },
   "include": ["tests/**/*", "types/**/*", "example/**/*"],
   "exclude": ["node_modules"]
@@ -68,7 +98,7 @@ module.exports = {
 ### All Tests
 
 ```bash
-npm test
+pnpm test
 ```
 
 This runs all test suites: CommonJS, ESM, and TypeScript.
@@ -76,33 +106,27 @@ This runs all test suites: CommonJS, ESM, and TypeScript.
 ### Individual Test Suites
 
 ```bash
-# CommonJS only
-npm run test:cjs
-
 # ESM only
-npm run test:esm
+pnpm run test:esm
 
 # TypeScript only
-npm run test:ts
+pnpm run test:ts
 ```
 
 ### Watch Mode
 
 ```bash
-# Watch CommonJS tests
-npx jest --watch tests/commonjs.test.js
-
 # Watch ESM tests
-NODE_OPTIONS=--experimental-vm-modules npx jest --watch tests/esm.test.mjs
+npx vitest --watch tests/esm.test.ts
 
 # Watch TypeScript tests
-npx jest --watch tests/typescript.test.ts
+npx vitest --watch tests/typescript.test.ts
 ```
 
 ### Coverage
 
 ```bash
-npx jest --coverage
+npx vitest --coverage
 ```
 
 ## Test Structure
@@ -164,9 +188,13 @@ describe('Express Routing - CommonJS', () => {
       next();
     };
 
-    Routes.get('/middleware-test', ({ req, res }) => {
-      res.json({ value: req.customValue });
-    }, [middleware]);
+    Routes.get(
+      '/middleware-test',
+      ({ req, res }) => {
+        res.json({ value: req.customValue });
+      },
+      [middleware],
+    );
 
     const response = await request(app).get('/middleware-test');
     expect(response.body.value).toBe('middleware-applied');
@@ -267,7 +295,7 @@ describe('Express Routing - ESM', () => {
 
   test('should handle async handlers', async () => {
     Routes.get('/async', async ({ res }) => {
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       res.json({ async: true });
     });
 
@@ -294,13 +322,13 @@ describe('Express Routing - ESM', () => {
 ESM tests require special Node.js flags:
 
 ```bash
-NODE_OPTIONS=--experimental-vm-modules npx jest tests/esm.test.mjs
+NODE_OPTIONS=--experimental-vm-modules npx vitest tests/esm.test.ts
 ```
 
-Or use the npm script:
+Or use the pnpm script:
 
 ```bash
-npm run test:esm
+pnpm run test:esm
 ```
 
 ## TypeScript Tests
@@ -368,15 +396,19 @@ describe('Express Routing - TypeScript', () => {
     const authMiddleware = (
       req: express.Request,
       res: express.Response,
-      next: express.NextFunction
+      next: express.NextFunction,
     ) => {
       req.body.authenticated = true;
       next();
     };
 
-    Routes.post('/auth', ({ req, res }: HttpContext) => {
-      res.json({ auth: req.body.authenticated });
-    }, [authMiddleware]);
+    Routes.post(
+      '/auth',
+      ({ req, res }: HttpContext) => {
+        res.json({ auth: req.body.authenticated });
+      },
+      [authMiddleware],
+    );
 
     const response = await request(app).post('/auth');
     expect(response.body.auth).toBe(true);
@@ -387,7 +419,7 @@ describe('Express Routing - TypeScript', () => {
 ### Running TypeScript Tests
 
 ```bash
-npm run test:ts
+pnpm run test:ts
 ```
 
 Or directly:
@@ -475,11 +507,19 @@ test('should execute middlewares in correct order', async () => {
   };
 
   Routes.middleware([mw1], () => {
-    Routes.group('/api', () => {
-      Routes.get('/test', ({ res }) => {
-        res.json({ order });
-      }, [mw3]);
-    }, [mw2]);
+    Routes.group(
+      '/api',
+      () => {
+        Routes.get(
+          '/test',
+          ({ res }) => {
+            res.json({ order });
+          },
+          [mw3],
+        );
+      },
+      [mw2],
+    );
   });
 
   const response = await request(app).get('/api/test');
@@ -523,14 +563,14 @@ jobs:
         node-version: [14.x, 16.x, 18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm test
-    - run: npm run build
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: pnpm ci
+      - run: pnpm test
+      - run: pnpm run build
 ```
 
 ## Troubleshooting
@@ -540,7 +580,7 @@ jobs:
 Make sure you're using the correct Node.js flags:
 
 ```bash
-NODE_OPTIONS=--experimental-vm-modules npx jest tests/esm.test.mjs
+NODE_OPTIONS=--experimental-vm-modules npx vitest tests/esm.test.ts
 ```
 
 ### TypeScript Type Errors
@@ -548,7 +588,7 @@ NODE_OPTIONS=--experimental-vm-modules npx jest tests/esm.test.mjs
 Ensure you have proper TypeScript configuration:
 
 ```bash
-npm install --save-dev typescript @types/node @types/express @types/jest
+pnpm install --save-dev typescript @types/node @types/express
 ```
 
 ### Test Isolation Issues

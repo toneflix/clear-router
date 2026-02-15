@@ -1,6 +1,8 @@
-const Routes = require('../src/routes');
+import { NextFunction, Request, Response } from "express";
 
-function pickRequestFields(req) {
+import Route from "../../src/express/routes";
+
+function pickRequestFields (req: Request) {
     return {
         baseUrl: req.baseUrl,
         body: req.body,
@@ -14,12 +16,12 @@ function pickRequestFields(req) {
     };
 }
 
-class Middleware {
-    static unprotected(req, res, next) {
+export class Middleware {
+    static unprotected (req: Request, res: Response, next: NextFunction) {
         next();
     }
 
-    static protected(req, res, next) {
+    static protected (req: Request, res: Response, next: NextFunction) {
         const id = req.query.id;
         if (!id || id !== '12345678') {
             return res.status(403).json({
@@ -33,7 +35,7 @@ class Middleware {
 }
 
 const ThisObject = {
-    index({ req, res }) {
+    index ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -41,7 +43,7 @@ const ThisObject = {
             request: pickRequestFields(req),
         });
     },
-    protected({ req, res }) {
+    protected ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -52,7 +54,7 @@ const ThisObject = {
 };
 
 class ThisInstanceClass {
-    index({ req, res }) {
+    index ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -61,7 +63,7 @@ class ThisInstanceClass {
         });
     }
 
-    protected({ req, res }) {
+    protected ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -72,7 +74,7 @@ class ThisInstanceClass {
 }
 
 class ThisStaticClass {
-    static index({ req, res }) {
+    static index ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -81,7 +83,7 @@ class ThisStaticClass {
         });
     }
 
-    static protected({ req, res }) {
+    static protected ({ req, res }: { req: Request, res: Response }) {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -91,8 +93,8 @@ class ThisStaticClass {
     }
 }
 
-Routes.middleware([Middleware.unprotected], () => {
-    Routes.get('directly', ({ req, res }) => {
+Route.middleware([Middleware.unprotected], () => {
+    Route.get('directly', ({ req, res }: { req: Request, res: Response }) => {
         return res.status(200).json({
             status: true,
             code: 200,
@@ -101,14 +103,14 @@ Routes.middleware([Middleware.unprotected], () => {
         });
     });
 
-    Routes.get('object', ThisObject.index);
-    Routes.get('instance', [ThisInstanceClass, 'index']);
-    Routes.get('static', ThisStaticClass.index);
+    Route.get('object', ThisObject.index);
+    Route.get('instance', [ThisInstanceClass, 'index']);
+    Route.get('static', ThisStaticClass.index);
 });
 
-Routes.middleware([Middleware.protected], () => {
-    Routes.group('protected', () => {
-        Routes.get('directly', ({ req, res }) => {
+Route.middleware([Middleware.protected], () => {
+    Route.group('protected', () => {
+        Route.get('directly', ({ req, res }: { req: Request, res: Response }) => {
             return res.status(200).json({
                 status: true,
                 code: 200,
@@ -117,18 +119,19 @@ Routes.middleware([Middleware.protected], () => {
             });
         });
 
-        Routes.get('object', ThisObject.protected);
-        Routes.get('instance', [ThisInstanceClass, 'protected']);
-        Routes.get('static', ThisStaticClass.protected);
+        Route.get('object', ThisObject.protected);
+        Route.get('instance', [ThisInstanceClass, 'protected']);
+        Route.get('static', ThisStaticClass.protected);
     });
 });
 
-Routes.get('routes-info', ({ res }) => {
-    const allRoutes = Routes.allRoutes();
+Route.get('routes-info', ({ res }: { res: Response }) => {
+    const allRoutes = Route.allRoutes();
     res.json({
         total: allRoutes.length,
         routes: allRoutes
     });
 });
 
-module.exports = Routes;
+export const Routes = Route;
+export default Routes;

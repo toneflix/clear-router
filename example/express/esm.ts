@@ -1,5 +1,5 @@
+import Routes from '../../src/express/routes';
 import express from 'express';
-import Routes from '../src/routes.mjs';
 
 const app = express();
 const router = express.Router();
@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = (
+    req: express.Request,
+    res: express.Response, next: express.NextFunction
+) => {
     const token = req.headers.authorization;
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -16,7 +19,7 @@ const authMiddleware = (req, res, next) => {
     next();
 };
 
-Routes.get('/', ({ res }) => {
+Routes.get('/', ({ res }: { res: express.Response }) => {
     res.json({
         message: 'ESM Example Server',
         version: '2.0.2',
@@ -25,33 +28,33 @@ Routes.get('/', ({ res }) => {
 });
 
 Routes.group('/api', () => {
-    Routes.get('/hello', ({ res }) => {
+    Routes.get('/hello', ({ res }: { res: express.Response }) => {
         res.json({ message: 'Hello from ESM!' });
     });
 
-    Routes.post('/echo', ({ req, res }) => {
+    Routes.post('/echo', ({ req, res }: { req: express.Request, res: express.Response }) => {
         res.json({ echo: req.body });
     });
 
     Routes.group('/users', () => {
-        Routes.get('/', ({ res }) => {
+        Routes.get('/', ({ res }: { res: express.Response }) => {
             res.json({ users: ['Alice', 'Bob', 'Charlie'] });
         });
 
-        Routes.get('/:id', ({ req, res }) => {
+        Routes.get('/:id', ({ req, res }: { req: express.Request, res: express.Response }) => {
             res.json({ id: req.params.id, name: 'User ' + req.params.id });
         });
     });
 });
 
 Routes.middleware([authMiddleware], () => {
-    Routes.get('/protected', ({ res }) => {
+    Routes.get('/protected', ({ res }: { res: express.Response }) => {
         res.json({ message: 'This is protected', access: 'granted' });
     });
 });
 
 class DataController {
-    static async getData({ res }) {
+    static async getData ({ res }: { res: express.Response }) {
         await new Promise(resolve => setTimeout(resolve, 100));
         res.json({
             data: [1, 2, 3, 4, 5],
@@ -62,7 +65,7 @@ class DataController {
 
 Routes.get('/data', [DataController, 'getData']);
 
-Routes.get('/routes', ({ res }) => {
+Routes.get('/routes', ({ res }: { res: express.Response }) => {
     const allRoutes = Routes.allRoutes();
     res.json({
         total: allRoutes.length,
@@ -70,20 +73,22 @@ Routes.get('/routes', ({ res }) => {
     });
 });
 
-await Routes.apply(router);
-app.use(router);
+(() => {
+    Routes.apply(router);
+    app.use(router);
 
-app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
-    res.status(err.status || 500).json({
-        error: err.message
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+        console.error('Error:', err.message);
+        res.status(err.status || 500).json({
+            error: err.message
+        });
     });
-});
 
-app.listen(PORT, () => {
-    console.log(`ESM Server running at http://localhost:${PORT}`);
-    console.log('\nAvailable routes:');
-    Routes.allRoutes().forEach(route => {
-        console.log(`  ${route.methods.join(', ').toUpperCase()} ${route.path}`);
+    app.listen(PORT, () => {
+        console.log(`ESM Server running at http://localhost:${PORT}`);
+        console.log('\nAvailable routes:');
+        Routes.allRoutes().forEach(route => {
+            console.log(`  ${route.methods.join(', ').toUpperCase()} ${route.path}`);
+        });
     });
-});
+})();

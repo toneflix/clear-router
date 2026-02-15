@@ -49,13 +49,15 @@ Middleware functions currently applied at the global level.
 Normalize a path by removing duplicate slashes and ensuring a leading slash.
 
 **Parameters:**
+
 - `path` (string): Path to normalize
 
 **Returns:** string - Normalized path
 
 **Example:**
+
 ```javascript
-Routes.normalizePath('/api//users/') // Returns: '/api/users'
+Routes.normalizePath('/api//users/'); // Returns: '/api/users'
 ```
 
 ### add(methods, path, handler, middlewares)
@@ -63,12 +65,14 @@ Routes.normalizePath('/api//users/') // Returns: '/api/users'
 Register a route with one or more HTTP methods.
 
 **Parameters:**
+
 - `methods` (string | string[]): HTTP method(s) for the route
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler or [Controller, method]
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.add('get', '/users', ({ res }) => res.send('Users'));
 Routes.add(['get', 'post'], '/data', handler);
@@ -79,11 +83,13 @@ Routes.add(['get', 'post'], '/data', handler);
 Register a GET route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.get('/users', ({ res }) => res.json(users));
 Routes.get('/admin', [AdminController, 'index'], [authMiddleware]);
@@ -94,11 +100,13 @@ Routes.get('/admin', [AdminController, 'index'], [authMiddleware]);
 Register a POST route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.post('/users', ({ req, res }) => {
   const user = createUser(req.body);
@@ -111,11 +119,13 @@ Routes.post('/users', ({ req, res }) => {
 Register a PUT route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.put('/users/:id', [UserController, 'update']);
 ```
@@ -125,11 +135,13 @@ Routes.put('/users/:id', [UserController, 'update']);
 Register a DELETE route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.delete('/users/:id', ({ req, res }) => {
   deleteUser(req.params.id);
@@ -142,11 +154,13 @@ Routes.delete('/users/:id', ({ req, res }) => {
 Register a PATCH route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.patch('/users/:id', [UserController, 'patch']);
 ```
@@ -156,11 +170,13 @@ Routes.patch('/users/:id', [UserController, 'patch']);
 Register an OPTIONS route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.options('/api/*', ({ res }) => {
   res.set('Allow', 'GET, POST, PUT, DELETE');
@@ -173,11 +189,13 @@ Routes.options('/api/*', ({ res }) => {
 Register a HEAD route.
 
 **Parameters:**
+
 - `path` (string): Route path
 - `handler` (Function | Array): Route handler
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
 Routes.head('/users/:id', [UserController, 'exists']);
 ```
@@ -187,16 +205,22 @@ Routes.head('/users/:id', [UserController, 'exists']);
 Group routes under a common prefix with optional middlewares.
 
 **Parameters:**
+
 - `prefix` (string): URL prefix for all routes in the group
 - `callback` (Function): Function containing route definitions
 - `middlewares` (Function[]): Optional middleware functions
 
 **Example:**
+
 ```javascript
-Routes.group('/api', () => {
-  Routes.get('/users', handler); // Becomes: /api/users
-  Routes.get('/posts', handler); // Becomes: /api/posts
-}, [apiMiddleware]);
+Routes.group(
+  '/api',
+  () => {
+    Routes.get('/users', handler); // Becomes: /api/users
+    Routes.get('/posts', handler); // Becomes: /api/posts
+  },
+  [apiMiddleware],
+);
 
 // Nested groups
 Routes.group('/api', () => {
@@ -211,10 +235,12 @@ Routes.group('/api', () => {
 Apply global middlewares to all routes defined within the callback.
 
 **Parameters:**
+
 - `middlewares` (Function[]): Middleware functions to apply
 - `callback` (Function): Function containing route definitions
 
 **Example:**
+
 ```javascript
 Routes.middleware([authMiddleware, logMiddleware], () => {
   Routes.get('/profile', handler);
@@ -229,6 +255,7 @@ Get information about all registered routes.
 **Returns:** Array<RouteInfo>
 
 **RouteInfo Object:**
+
 ```javascript
 {
   methods: string[],        // HTTP methods
@@ -239,6 +266,7 @@ Get information about all registered routes.
 ```
 
 **Example:**
+
 ```javascript
 Routes.get('/users', handler);
 Routes.post('/posts', [PostController, 'create'], [authMiddleware]);
@@ -267,11 +295,13 @@ console.log(routes);
 Apply all registered routes to an Express Router instance.
 
 **Parameters:**
+
 - `router` (express.Router): Express Router instance
 
 **Returns:** Promise<void>
 
 **Example:**
+
 ```javascript
 const express = require('express');
 const Routes = require('@refkinscallv/express-routing');
@@ -304,6 +334,7 @@ interface HttpContext {
 ```
 
 **Example:**
+
 ```javascript
 Routes.get('/users', ({ req, res, next }) => {
   try {
@@ -326,10 +357,11 @@ Routes.get('/users', ({ req, res, next }) => {
 #### Controller Handler
 
 ```javascript
-[ControllerClass, 'methodName']
+[ControllerClass, 'methodName'];
 ```
 
 **Static Method:**
+
 ```javascript
 class UserController {
   static index({ res }) {
@@ -341,6 +373,7 @@ Routes.get('/users', [UserController, 'index']);
 ```
 
 **Instance Method:**
+
 ```javascript
 class UserController {
   index({ res }) {
@@ -360,6 +393,7 @@ Standard Express middleware function.
 ```
 
 **Example:**
+
 ```javascript
 const authMiddleware = (req, res, next) => {
   if (!req.headers.authorization) {
@@ -374,6 +408,7 @@ const authMiddleware = (req, res, next) => {
 All errors during route execution are automatically passed to Express error handling middleware.
 
 **Example:**
+
 ```javascript
 // Route with potential error
 Routes.get('/users/:id', async ({ req, res }) => {
@@ -388,7 +423,7 @@ Routes.get('/users/:id', async ({ req, res }) => {
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
-    error: err.message
+    error: err.message,
   });
 });
 ```
@@ -402,15 +437,29 @@ Middlewares are executed in the following order:
 3. Route-specific middlewares (passed to individual route methods)
 
 **Example:**
+
 ```javascript
-const globalMw = (req, res, next) => { console.log('Global'); next(); };
-const groupMw = (req, res, next) => { console.log('Group'); next(); };
-const routeMw = (req, res, next) => { console.log('Route'); next(); };
+const globalMw = (req, res, next) => {
+  console.log('Global');
+  next();
+};
+const groupMw = (req, res, next) => {
+  console.log('Group');
+  next();
+};
+const routeMw = (req, res, next) => {
+  console.log('Route');
+  next();
+};
 
 Routes.middleware([globalMw], () => {
-  Routes.group('/api', () => {
-    Routes.get('/users', handler, [routeMw]);
-  }, [groupMw]);
+  Routes.group(
+    '/api',
+    () => {
+      Routes.get('/users', handler, [routeMw]);
+    },
+    [groupMw],
+  );
 });
 
 // Execution: Global -> Group -> Route
@@ -422,7 +471,7 @@ Routes.middleware([globalMw], () => {
 
 ```javascript
 // routes/users.js
-module.exports = (Routes) => {
+export default (Routes) => {
   Routes.group('/users', () => {
     Routes.get('/', [UserController, 'index']);
     Routes.post('/', [UserController, 'create']);
@@ -439,13 +488,20 @@ require('./routes/users')(Routes);
 ### 2. Middleware Composition
 
 ```javascript
-const authenticate = (req, res, next) => { /* ... */ next(); };
-const authorize = (role) => (req, res, next) => { /* ... */ next(); };
-const validate = (schema) => (req, res, next) => { /* ... */ next(); };
+const authenticate = (req, res, next) => {
+  /* ... */ next();
+};
+const authorize = (role) => (req, res, next) => {
+  /* ... */ next();
+};
+const validate = (schema) => (req, res, next) => {
+  /* ... */ next();
+};
 
-Routes.post('/admin/users',
+Routes.post(
+  '/admin/users',
   [AdminController, 'create'],
-  [authenticate, authorize('admin'), validate(userSchema)]
+  [authenticate, authorize('admin'), validate(userSchema)],
 );
 ```
 

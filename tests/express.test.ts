@@ -1,10 +1,13 @@
-const request = require('supertest')
-const express = require('express')
-const Routes = require('../src/routes')
-require('../example/web')
+import '../example/express/web'
+
+import { beforeAll, describe, expect, it } from "vitest"
+
+import Routes from "../src/express/routes"
+import express from "express"
+import request from "supertest"
 
 describe('Express App (JS)', () => {
-    let app
+    let app: express.Application
 
     beforeAll(() => {
         app = express()

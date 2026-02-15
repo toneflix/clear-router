@@ -1,0 +1,31 @@
+import { H3, H3Event, TypedServerRequest } from 'h3';
+
+import { ControllerHandler } from './basic';
+
+export type H3App = Omit<H3['fetch'], 'fetch'> & { fetch: (request: TypedServerRequest) => Promise<Response> }
+
+export type MaybePromise<T = unknown> = T | Promise<T>;
+
+/**
+ * HTTP context passed to route handlers
+ */
+export type HttpContext = H3Event
+
+/**
+ * Route handler function type
+ */
+export type RouteHandler = (
+    ctx: HttpContext,
+) => any | Promise<any>;
+
+/**
+ * Handler can be either a function or controller reference
+ */
+export type Handler = RouteHandler | ControllerHandler;
+
+export type NextFunction = () => MaybePromise<unknown | undefined>;
+
+/**
+ * Middleware function type
+ */
+export { Middleware } from "h3";

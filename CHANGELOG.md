@@ -5,9 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2026-02-15
+
+### Changed
+
+- Removed jest as a testing framework
+- Remove all CJS tests
+
+### Added
+
+- Added routing functionality for Express.js in src/express/routes.ts
+- Added routing functionality for H3 in src/h3/routes.ts
+- Created tests for both Express and H3 routing in tests/express.test.ts and tests/h3.test.ts
+- Introduced types for routing in types/basic.ts, types/express.ts, and types/h3.ts
+- Configured `tsdown` for building both ESM and CommonJS formats
+- Set up Vitest for testing with coverage reporting
+
 ## [2.0.2] - 2026-01-09
 
 ### Fixed
+
 - **BREAKING FIX**: CommonJS import no longer requires `.default` property
   - Before: `const Routes = require('@refkinscallv/express-routing'); Routes.default.get()`
   - After: `const Routes = require('@refkinscallv/express-routing'); Routes.get()`
@@ -15,12 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added dual export support (`module.exports` and `module.exports.default`) for maximum compatibility
 
 ### Changed
+
 - Enhanced CommonJS module exports for direct class access
 - Maintained backward compatibility with ESM interop tools
 
 ## [2.0.1] - 2026-01-03
 
 ### Added
+
 - Full ESM (ES Module) support with dedicated `.mjs` file
 - Complete TypeScript definitions with full type safety
 - `allRoutes()` method to inspect all registered routes with metadata
@@ -33,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This changelog
 
 ### Changed
+
 - **BREAKING**: Upgraded to Express 5.x (minimum version 5.1.0)
 - **BREAKING**: Minimum Node.js version now 22.0.0
 - All errors now properly thrown to Express error handling middleware
@@ -43,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test infrastructure completely rewritten for better reliability
 
 ### Fixed
+
 - Error handling now correctly delegates to Express instead of console.error
 - Controller instantiation errors properly propagated
 - Invalid HTTP method errors properly thrown
@@ -51,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript module resolution in Jest
 
 ### Documentation
+
 - Complete API reference documentation with examples
 - Testing guide covering CommonJS, ESM, and TypeScript
 - Updated README with migration guide
@@ -58,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved JSDoc comments for better IDE support
 
 ### Development
+
 - Added `cross-env` for cross-platform environment variables
 - Integrated `ts-jest` for TypeScript testing
 - Improved build scripts with type generation
@@ -66,55 +89,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.1] - 2024-12-15
 
 ### Added
+
 - Basic ESM support (experimental)
 - TypeScript type definitions
 - Route inspection capability
 
 ### Changed
+
 - Error handling improvements
 - Documentation updates
 
 ### Fixed
+
 - Controller binding issues
 - Path normalization edge cases
 
 ## [1.1.1] - 2024-12-10
 
 ### Fixed
+
 - Controller binding for instance methods
 - Path normalization edge cases with trailing slashes
 
 ### Changed
+
 - Improved error logging messages
 - Better handling of undefined middleware arrays
 
 ## [1.1.0] - 2024-12-01
 
 ### Added
+
 - Support for multiple HTTP methods in single route via `add()` method
 - Instance class controller support
 - Enhanced middleware stacking
 
 ### Changed
+
 - Improved controller method binding logic
 - Better error messages for invalid handlers
 
 ### Fixed
+
 - Middleware execution order in nested groups
 - Path normalization with empty prefix
 
 ## [1.0.5] - 2024-11-15
 
 ### Fixed
+
 - Group middleware not properly applied to nested routes
 - Route path normalization with double slashes
 
 ### Changed
+
 - Optimized route registration performance
 
 ## [1.0.0] - 2024-11-01
 
 ### Added
+
 - Initial release
 - Laravel-style routing for Express.js
 - Support for GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD methods
@@ -126,6 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Express-compatible error handling
 
 ### Features
+
 - Clean route definitions
 - Middleware stacking
 - Controller-method pair support
@@ -139,15 +174,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### CommonJS Import (Developer Experience Fix)
 
 In version 2.0.1, CommonJS users had to use:
+
 ```javascript
-const Routes = require('@refkinscallv/express-routing')
-Routes.default.get('/path', handler) // Awkward!
+const Routes = require('@refkinscallv/express-routing');
+Routes.default.get('/path', handler); // Awkward!
 ```
 
 Now in 2.0.2, the natural syntax works:
+
 ```javascript
-const Routes = require('@refkinscallv/express-routing')
-Routes.get('/path', handler) // Clean!
+const Routes = require('@refkinscallv/express-routing');
+Routes.get('/path', handler); // Clean!
 ```
 
 **Migration**: Simply remove `.default` from your CommonJS imports. Your code will be cleaner and more intuitive.
@@ -155,26 +192,31 @@ Routes.get('/path', handler) // Clean!
 ### Breaking Changes in 2.0.1
 
 #### Express Version
+
 - **Old**: Express 4.x
 - **New**: Express 5.x (minimum 5.1.0)
 
 Express 5 includes several breaking changes. Most notably:
+
 - `res.json()` and `res.send()` now work asynchronously
 - Error handling is more strict
 - Some deprecated methods removed
 
 **Migration**: Update your Express installation:
+
 ```bash
 npm install express@^5.1.0
 ```
 
 #### Node.js Version
+
 - **Old**: Node.js 14.x or higher
 - **New**: Node.js 22.0.0 or higher
 
 **Migration**: Upgrade your Node.js version to 22 or higher.
 
 #### No Other Breaking Changes
+
 All routing APIs remain backward compatible. Your existing route definitions will work without modification.
 
 ### Deprecations
@@ -194,15 +236,17 @@ This is a minor fix release that improves the CommonJS import experience.
 #### If You Were Using `.default` in CommonJS
 
 **Before (2.0.1):**
+
 ```javascript
-const Routes = require('@refkinscallv/express-routing')
-Routes.default.get('/users', handler)
+const Routes = require('@refkinscallv/express-routing');
+Routes.default.get('/users', handler);
 ```
 
 **After (2.0.2):**
+
 ```javascript
-const Routes = require('@refkinscallv/express-routing')
-Routes.get('/users', handler) // Much better!
+const Routes = require('@refkinscallv/express-routing');
+Routes.get('/users', handler); // Much better!
 ```
 
 #### No Changes Needed for ESM or TypeScript
@@ -211,14 +255,14 @@ ESM and TypeScript imports continue to work exactly the same:
 
 ```javascript
 // ESM - No changes
-import Routes from '@refkinscallv/express-routing'
-Routes.get('/users', handler)
+import Routes from '@refkinscallv/express-routing';
+Routes.get('/users', handler);
 ```
 
 ```typescript
 // TypeScript - No changes
-import Routes from '@refkinscallv/express-routing'
-Routes.get('/users', handler)
+import Routes from '@refkinscallv/express-routing';
+Routes.get('/users', handler);
 ```
 
 ### From 1.x to 2.0.x
@@ -248,11 +292,11 @@ Your existing route definitions work without modification:
 ```javascript
 // This still works exactly the same
 Routes.get('/users', ({ res }) => {
-    res.json({ users: [] });
+  res.json({ users: [] });
 });
 
 Routes.group('/api', () => {
-    Routes.post('/data', handler);
+  Routes.post('/data', handler);
 });
 ```
 
@@ -264,7 +308,7 @@ Routes.group('/api', () => {
 const Routes = require('@refkinscallv/express-routing');
 
 Routes.get('/test', ({ res }) => {
-    res.json({ message: 'CommonJS works!' });
+  res.json({ message: 'CommonJS works!' });
 });
 ```
 
@@ -274,7 +318,7 @@ Routes.get('/test', ({ res }) => {
 import Routes from '@refkinscallv/express-routing';
 
 Routes.get('/test', ({ res }) => {
-    res.json({ message: 'ESM works!' });
+  res.json({ message: 'ESM works!' });
 });
 ```
 
@@ -285,7 +329,7 @@ import Routes from '@refkinscallv/express-routing';
 import type { HttpContext } from '@refkinscallv/express-routing';
 
 Routes.get('/test', ({ res }: HttpContext) => {
-    res.json({ message: 'TypeScript works!' });
+  res.json({ message: 'TypeScript works!' });
 });
 ```
 
@@ -318,6 +362,7 @@ console.log(routes);
 ## Roadmap
 
 ### Planned for 2.1.0
+
 - Route naming with `name()` method
 - URL generation from named routes
 - Route parameter constraints (regex patterns)
@@ -325,12 +370,14 @@ console.log(routes);
 - Route prefixes for API versioning
 
 ### Planned for 2.2.0
+
 - Route caching for production performance
 - Route middleware groups (named middleware sets)
 - Rate limiting integration
 - CORS helper methods
 
 ### Planned for 3.0.0
+
 - Plugin system for extensibility
 - Advanced middleware features
 - Route documentation auto-generation
@@ -340,6 +387,7 @@ console.log(routes);
 ## Support
 
 For questions, issues, or feature requests:
+
 - **GitHub Issues**: https://github.com/refkinscallv/express-routing/issues
 - **Email**: refkinscallv@gmail.com
 - **Documentation**: See API.md and TESTING.md
@@ -356,12 +404,12 @@ MIT License - see LICENSE file for details
 
 ## Version History Summary
 
-| Version | Release Date | Major Changes |
-|---------|--------------|---------------|
-| 2.0.2   | 2026-01-09  | Fixed CommonJS import (no more `.default`) |
-| 2.0.1   | 2026-01-03  | Express 5, Node 22, Full ESM/TS support |
-| 1.2.1   | 2025-12-15  | Basic ESM, TypeScript definitions |
-| 1.1.1   | 2025-12-10  | Controller fixes |
-| 1.1.0   | 2025-12-01  | Multiple methods, instance controllers |
-| 1.0.5   | 2025-11-15  | Group middleware fixes |
-| 1.0.0   | 2025-11-01  | Initial release |
+| Version | Release Date | Major Changes                              |
+| ------- | ------------ | ------------------------------------------ |
+| 2.0.2   | 2026-01-09   | Fixed CommonJS import (no more `.default`) |
+| 2.0.1   | 2026-01-03   | Express 5, Node 22, Full ESM/TS support    |
+| 1.2.1   | 2025-12-15   | Basic ESM, TypeScript definitions          |
+| 1.1.1   | 2025-12-10   | Controller fixes                           |
+| 1.1.0   | 2025-12-01   | Multiple methods, instance controllers     |
+| 1.0.5   | 2025-11-15   | Group middleware fixes                     |
+| 1.0.0   | 2025-11-01   | Initial release                            |

@@ -1,5 +1,7 @@
-import express, { Router, Request, Response, NextFunction } from 'express';
-import Routes, { HttpContext } from '../types/index';
+import express, { NextFunction, Request, Response, Router } from 'express';
+
+import { HttpContext } from 'types/express';
+import Routes from 'clear-router/express';
 
 const app = express();
 const router: Router = Router();
@@ -34,7 +36,7 @@ const validateId = (req: Request, res: Response, next: NextFunction): void => {
 };
 
 Routes.middleware([logMiddleware], () => {
-    Routes.get('/', ({ res }: HttpContext): void => {
+    Routes.get('/', ({ res }): void => {
         res.json({
             message: 'TypeScript Example Server',
             version: '2.0.2',
@@ -43,23 +45,23 @@ Routes.middleware([logMiddleware], () => {
     });
 
     Routes.group('/api', () => {
-        Routes.get('/users', ({ res }: HttpContext): void => {
+        Routes.get('/users', ({ res }): void => {
             res.json({ users });
         });
 
-        Routes.get('/users/:id', ({ req, res }: HttpContext): void => {
+        Routes.get('/users/:id', ({ req, res }): void => {
             const id = parseInt(req.params.id, 10);
             const user = users.find(u => u.id === id);
-            
+
             if (!user) {
                 res.status(404).json({ error: 'User not found' });
                 return;
             }
-            
+
             res.json({ user });
         }, [validateId]);
 
-        Routes.post('/users', ({ req, res }: HttpContext): void => {
+        Routes.post('/users', ({ req, res }): void => {
             const newUser: User = {
                 id: users.length + 1,
                 name: req.body.name,
@@ -72,7 +74,7 @@ Routes.middleware([logMiddleware], () => {
 });
 
 class StatsController {
-    static getStats({ res }: HttpContext): void {
+    static getStats ({ res }: HttpContext): void {
         res.json({
             totalUsers: users.length,
             totalRoutes: Routes.allRoutes().length,
@@ -80,9 +82,9 @@ class StatsController {
         });
     }
 
-    static async getAsyncStats({ res }: HttpContext): Promise<void> {
+    static async getAsyncStats ({ res }: HttpContext): Promise<void> {
         await new Promise<void>(resolve => setTimeout(resolve, 100));
-        
+
         res.json({
             status: 'processed',
             users: users.length,
@@ -102,8 +104,8 @@ Routes.get('/routes', ({ res }: HttpContext): void => {
     });
 });
 
-(async () => {
-    await Routes.apply(router);
+(() => {
+    Routes.apply(router);
     app.use(router);
 
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

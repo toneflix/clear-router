@@ -1,28 +1,33 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "nodenext",
-        "lib": ["ES2020"],
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "moduleResolution": "nodenext",
-        "resolveJsonModule": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "outDir": "./dist",
-        "rootDir": "./",
-        "types": ["node", "jest", "express"]
-    },
-    "include": [
-        "src/**/*",
-        "types/**/*",
-        "tests/**/*",
-        "example/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+  "compilerOptions": {
+    "module": "es2022",
+    "target": "es2022",
+    "lib": ["es2022", "DOM"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "types": ["node", "vitest", "express"],
+    "baseUrl": ".",
+    "paths": {
+      "clear-router/express": ["src/express/routes.ts"],
+      "clear-router/express/*": ["src/express/*"],
+      "clear-router/h3": ["src/h3/routes.ts"],
+      "clear-router/h3/*": ["src/h3/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "types/**/*",
+    "tests/**/*",
+    "example/**/*",
+    "vitest.config.ts",
+    "tsdown.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
