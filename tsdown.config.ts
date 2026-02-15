@@ -13,8 +13,10 @@ export default defineConfig([
   {
     exports: true,
     unbundle: true,
-    entry: ['types/express.ts', 'types/h3.ts'],
-    outDir: 'dist/types',
+    entry: {
+      "types/*": ["./types/*.ts", "!./types/index.ts"],
+    },
+    outDir: 'dist',
     format: ['esm'],
   }
 ])
