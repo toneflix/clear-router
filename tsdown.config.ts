@@ -6,7 +6,7 @@ export default defineConfig(
     tsconfig: 'tsconfig.json',
     entry: ['src/express/routes.ts', 'src/h3/routes.ts'],
     platform: 'node',
-    outDir: 'dist/express',
+    outDir: 'dist',
     format: ['esm', 'cjs'],
     skipNodeModulesBundle: true,
   })

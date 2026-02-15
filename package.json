@@ -28,17 +28,17 @@
     "license": "MIT",
     "author": "3m1n1nce <3m1n1nce@toneflix.net>",
     "type": "module",
-    "main": "dist/express/express/routes.cjs",
-    "module": "dist/express/express/routes.mjs",
-    "types": "dist/express/express/routes.d.mts",
+    "main": "dist/express/routes.cjs",
+    "module": "dist/express/routes.mjs",
+    "types": "dist/express/routes.d.mts",
     "exports": {
         "./express/routes": {
-            "import": "./dist/express/express/routes.mjs",
-            "require": "./dist/express/express/routes.cjs"
+            "import": "./dist/express/routes.mjs",
+            "require": "./dist/express/routes.cjs"
         },
         "./h3/routes": {
-            "import": "./dist/express/h3/routes.mjs",
-            "require": "./dist/express/h3/routes.cjs"
+            "import": "./dist/h3/routes.mjs",
+            "require": "./dist/h3/routes.cjs"
         },
         "./package.json": "./package.json"
     },
