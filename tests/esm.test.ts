@@ -67,19 +67,19 @@ describe('Express Routing - ESM', () => {
 
     test('should support API resources', async () => {
         class UserController {
-            static index ({ res }: { res: express.Response }) {
+            index ({ res }: { res: express.Response }) {
                 return res.json({ users: ['Alice', 'Bob'] });
             }
-            static show ({ res }: { res: express.Response }) {
+            show ({ res }: { res: express.Response }) {
                 return res.json({ name: 'Alice' });
             }
-            static create ({ res }: { res: express.Response }) {
+            create ({ res }: { res: express.Response }) {
                 return res.status(201).json({ name: 'Alice' });
             }
-            static update ({ res }: { res: express.Response }) {
+            update ({ res }: { res: express.Response }) {
                 return res.status(202).json({ name: 'Alice' });
             }
-            static destroy ({ res }: { res: express.Response }) {
+            destroy ({ res }: { res: express.Response }) {
                 return res.status(202).json({ name: 'Alice' });
             }
         }
@@ -214,19 +214,19 @@ describe('H3 Routing - ESM', () => {
 
     test('should support API resources', async () => {
         class UserController {
-            static index () {
+            index () {
                 return { users: ['Alice', 'Bob'] };
             }
-            static show () {
+            show () {
                 return { name: 'Alice' };
             }
-            static create () {
+            create () {
                 return global.Response.json({ name: 'Alice' }, { status: 201 });
             }
-            static update () {
+            update () {
                 return global.Response.json({ name: 'Alice' }, { status: 202 });
             }
-            static destroy () {
+            destroy () {
                 return global.Response.json({ name: 'Alice' }, { status: 202 });
             }
         }
