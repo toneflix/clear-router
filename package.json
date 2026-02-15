@@ -51,14 +51,14 @@
         "LICENSE"
     ],
     "scripts": {
-        "test": " pnpm test:esm && pnpm test:ts",
+        "test": "pnpm test:esm && pnpm test:ts",
         "test:esm": "vitest tests/esm.test.ts",
         "test:ts": "vitest tests/typescript.test.ts",
         "example": "tsx example/express/index.ts",
         "example:esm": "tsx example/express/esm.ts",
         "example:ts": "tsx example/express/typescript.ts",
         "build": "pnpm tsdown",
-        "prepublishOnly": "pnpm build && pnpm test"
+        "prepublishOnly": "pnpm build && pnpm test:esm --watch=false && pnpm test:ts --watch=false"
     },
     "peerDependencies": {
         "express": "^5.1.0",
