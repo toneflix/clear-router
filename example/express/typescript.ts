@@ -1,10 +1,10 @@
-import express, { NextFunction, Request, Response, Router } from 'express';
+import express, { Router as ExRouter, NextFunction, Request, Response } from 'express';
 
 import { HttpContext } from 'types/express';
-import Routes from 'clear-router/express';
+import Router from 'clear-router/express/router';
 
 const app = express();
-const router: Router = Router();
+const router: ExRouter = ExRouter();
 const PORT: number = parseInt(process.env.PORT || '3002', 10);
 
 app.use(express.json());
@@ -35,8 +35,8 @@ const validateId = (req: Request, res: Response, next: NextFunction): void => {
     next();
 };
 
-Routes.middleware([logMiddleware], () => {
-    Routes.get('/', ({ res }): void => {
+Router.middleware([logMiddleware], () => {
+    Router.get('/', ({ res }): void => {
         res.json({
             message: 'TypeScript Example Server',
             version: '2.0.2',
@@ -44,12 +44,12 @@ Routes.middleware([logMiddleware], () => {
         });
     });
 
-    Routes.group('/api', () => {
-        Routes.get('/users', ({ res }): void => {
+    Router.group('/api', () => {
+        Router.get('/users', ({ res }): void => {
             res.json({ users });
         });
 
-        Routes.get('/users/:id', ({ req, res }): void => {
+        Router.get('/users/:id', ({ req, res }): void => {
             const id = parseInt(req.params.id, 10);
             const user = users.find(u => u.id === id);
 
@@ -61,7 +61,7 @@ Routes.middleware([logMiddleware], () => {
             res.json({ user });
         }, [validateId]);
 
-        Routes.post('/users', ({ req, res }): void => {
+        Router.post('/users', ({ req, res }): void => {
             const newUser: User = {
                 id: users.length + 1,
                 name: req.body.name,
@@ -77,7 +77,7 @@ class StatsController {
     static getStats ({ res }: HttpContext): void {
         res.json({
             totalUsers: users.length,
-            totalRoutes: Routes.allRoutes().length,
+            totalRoutes: Router.allRoutes().length,
             timestamp: new Date().toISOString()
         });
     }
@@ -88,16 +88,16 @@ class StatsController {
         res.json({
             status: 'processed',
             users: users.length,
-            routes: Routes.allRoutes().length
+            routes: Router.allRoutes().length
         });
     }
 }
 
-Routes.get('/stats', [StatsController, 'getStats']);
-Routes.get('/stats/async', [StatsController, 'getAsyncStats']);
+Router.get('/stats', [StatsController, 'getStats']);
+Router.get('/stats/async', [StatsController, 'getAsyncStats']);
 
-Routes.get('/routes', ({ res }: HttpContext): void => {
-    const allRoutes = Routes.allRoutes();
+Router.get('/routes', ({ res }: HttpContext): void => {
+    const allRoutes = Router.allRoutes();
     res.json({
         total: allRoutes.length,
         routes: allRoutes
@@ -105,7 +105,7 @@ Routes.get('/routes', ({ res }: HttpContext): void => {
 });
 
 (() => {
-    Routes.apply(router);
+    Router.apply(router);
     app.use(router);
 
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -118,7 +118,7 @@ Routes.get('/routes', ({ res }: HttpContext): void => {
     app.listen(PORT, () => {
         console.log(`TypeScript Server running at http://localhost:${PORT}`);
         console.log('\nAvailable routes:');
-        Routes.allRoutes().forEach(route => {
+        Router.allRoutes().forEach(route => {
             console.log(`  ${route.methods.join(', ').toUpperCase()} ${route.path}`);
         });
     });

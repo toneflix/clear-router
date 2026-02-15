@@ -1,6 +1,6 @@
 {
     "name": "clear-router",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "Laravel-style routing system for Express.js and H3, with CommonJS, ESM, and TypeScript support",
     "keywords": [
         "h3",
@@ -32,13 +32,15 @@
     "module": "dist/express/routes.mjs",
     "types": "dist/express/routes.d.mts",
     "exports": {
-        "./express/routes": {
-            "import": "./dist/express/routes.mjs",
-            "require": "./dist/express/routes.cjs"
+        "./express": "./dist/types/express.mjs",
+        "./express/router": {
+            "import": "./dist/express/router.mjs",
+            "require": "./dist/express/router.cjs"
         },
-        "./h3/routes": {
-            "import": "./dist/h3/routes.mjs",
-            "require": "./dist/h3/routes.cjs"
+        "./h3": "./dist/types/h3.mjs",
+        "./h3/router": {
+            "import": "./dist/h3/router.mjs",
+            "require": "./dist/h3/router.cjs"
         },
         "./package.json": "./package.json"
     },

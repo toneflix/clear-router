@@ -1,6 +1,6 @@
 # API Documentation
 
-Complete API reference for @refkinscallv/express-routing
+Complete API reference for clear-router
 
 ## Table of Contents
 
@@ -57,7 +57,7 @@ Normalize a path by removing duplicate slashes and ensuring a leading slash.
 **Example:**
 
 ```javascript
-Routes.normalizePath('/api//users/'); // Returns: '/api/users'
+Router.normalizePath('/api//users/'); // Returns: '/api/users'
 ```
 
 ### add(methods, path, handler, middlewares)
@@ -74,8 +74,8 @@ Register a route with one or more HTTP methods.
 **Example:**
 
 ```javascript
-Routes.add('get', '/users', ({ res }) => res.send('Users'));
-Routes.add(['get', 'post'], '/data', handler);
+Router.add('get', '/users', ({ res }) => res.send('Users'));
+Router.add(['get', 'post'], '/data', handler);
 ```
 
 ### get(path, handler, middlewares)
@@ -91,8 +91,8 @@ Register a GET route.
 **Example:**
 
 ```javascript
-Routes.get('/users', ({ res }) => res.json(users));
-Routes.get('/admin', [AdminController, 'index'], [authMiddleware]);
+Router.get('/users', ({ res }) => res.json(users));
+Router.get('/admin', [AdminController, 'index'], [authMiddleware]);
 ```
 
 ### post(path, handler, middlewares)
@@ -108,7 +108,7 @@ Register a POST route.
 **Example:**
 
 ```javascript
-Routes.post('/users', ({ req, res }) => {
+Router.post('/users', ({ req, res }) => {
   const user = createUser(req.body);
   res.json(user);
 });
@@ -127,7 +127,7 @@ Register a PUT route.
 **Example:**
 
 ```javascript
-Routes.put('/users/:id', [UserController, 'update']);
+Router.put('/users/:id', [UserController, 'update']);
 ```
 
 ### delete(path, handler, middlewares)
@@ -143,7 +143,7 @@ Register a DELETE route.
 **Example:**
 
 ```javascript
-Routes.delete('/users/:id', ({ req, res }) => {
+Router.delete('/users/:id', ({ req, res }) => {
   deleteUser(req.params.id);
   res.sendStatus(204);
 });
@@ -162,7 +162,7 @@ Register a PATCH route.
 **Example:**
 
 ```javascript
-Routes.patch('/users/:id', [UserController, 'patch']);
+Router.patch('/users/:id', [UserController, 'patch']);
 ```
 
 ### options(path, handler, middlewares)
@@ -178,7 +178,7 @@ Register an OPTIONS route.
 **Example:**
 
 ```javascript
-Routes.options('/api/*', ({ res }) => {
+Router.options('/api/*', ({ res }) => {
   res.set('Allow', 'GET, POST, PUT, DELETE');
   res.sendStatus(200);
 });
@@ -197,7 +197,7 @@ Register a HEAD route.
 **Example:**
 
 ```javascript
-Routes.head('/users/:id', [UserController, 'exists']);
+Router.head('/users/:id', [UserController, 'exists']);
 ```
 
 ### group(prefix, callback, middlewares)
@@ -213,19 +213,19 @@ Group routes under a common prefix with optional middlewares.
 **Example:**
 
 ```javascript
-Routes.group(
+Router.group(
   '/api',
   () => {
-    Routes.get('/users', handler); // Becomes: /api/users
-    Routes.get('/posts', handler); // Becomes: /api/posts
+    Router.get('/users', handler); // Becomes: /api/users
+    Router.get('/posts', handler); // Becomes: /api/posts
   },
   [apiMiddleware],
 );
 
 // Nested groups
-Routes.group('/api', () => {
-  Routes.group('/v1', () => {
-    Routes.get('/users', handler); // Becomes: /api/v1/users
+Router.group('/api', () => {
+  Router.group('/v1', () => {
+    Router.get('/users', handler); // Becomes: /api/v1/users
   });
 });
 ```
@@ -242,9 +242,9 @@ Apply global middlewares to all routes defined within the callback.
 **Example:**
 
 ```javascript
-Routes.middleware([authMiddleware, logMiddleware], () => {
-  Routes.get('/profile', handler);
-  Routes.get('/settings', handler);
+Router.middleware([authMiddleware, logMiddleware], () => {
+  Router.get('/profile', handler);
+  Router.get('/settings', handler);
 });
 ```
 
@@ -268,10 +268,10 @@ Get information about all registered routes.
 **Example:**
 
 ```javascript
-Routes.get('/users', handler);
-Routes.post('/posts', [PostController, 'create'], [authMiddleware]);
+Router.get('/users', handler);
+Router.post('/posts', [PostController, 'create'], [authMiddleware]);
 
-const routes = Routes.allRoutes();
+const routes = Router.allRoutes();
 console.log(routes);
 // Output:
 // [
@@ -304,16 +304,16 @@ Apply all registered routes to an Express Router instance.
 
 ```javascript
 const express = require('express');
-const Routes = require('@refkinscallv/express-routing');
+const Routes = require('clear-router');
 
 const app = express();
 const router = express.Router();
 
 // Define routes
-Routes.get('/hello', ({ res }) => res.send('Hello'));
+Router.get('/hello', ({ res }) => res.send('Hello'));
 
 // Apply to router
-await Routes.apply(router);
+await Router.apply(router);
 
 // Use in app
 app.use(router);
@@ -336,7 +336,7 @@ interface HttpContext {
 **Example:**
 
 ```javascript
-Routes.get('/users', ({ req, res, next }) => {
+Router.get('/users', ({ req, res, next }) => {
   try {
     const users = getUsers();
     res.json(users);
@@ -369,7 +369,7 @@ class UserController {
   }
 }
 
-Routes.get('/users', [UserController, 'index']);
+Router.get('/users', [UserController, 'index']);
 ```
 
 **Instance Method:**
@@ -381,7 +381,7 @@ class UserController {
   }
 }
 
-Routes.get('/users', [UserController, 'index']);
+Router.get('/users', [UserController, 'index']);
 ```
 
 ### Middleware
@@ -411,7 +411,7 @@ All errors during route execution are automatically passed to Express error hand
 
 ```javascript
 // Route with potential error
-Routes.get('/users/:id', async ({ req, res }) => {
+Router.get('/users/:id', async ({ req, res }) => {
   const user = await getUserById(req.params.id);
   if (!user) {
     throw new Error('User not found');
@@ -432,8 +432,8 @@ app.use((err, req, res, next) => {
 
 Middlewares are executed in the following order:
 
-1. Global middlewares (from `Routes.middleware()`)
-2. Group middlewares (from `Routes.group()`)
+1. Global middlewares (from `Router.middleware()`)
+2. Group middlewares (from `Router.group()`)
 3. Route-specific middlewares (passed to individual route methods)
 
 **Example:**
@@ -452,11 +452,11 @@ const routeMw = (req, res, next) => {
   next();
 };
 
-Routes.middleware([globalMw], () => {
-  Routes.group(
+Router.middleware([globalMw], () => {
+  Router.group(
     '/api',
     () => {
-      Routes.get('/users', handler, [routeMw]);
+      Router.get('/users', handler, [routeMw]);
     },
     [groupMw],
   );
@@ -472,12 +472,12 @@ Routes.middleware([globalMw], () => {
 ```javascript
 // routes/users.js
 export default (Routes) => {
-  Routes.group('/users', () => {
-    Routes.get('/', [UserController, 'index']);
-    Routes.post('/', [UserController, 'create']);
-    Routes.get('/:id', [UserController, 'show']);
-    Routes.put('/:id', [UserController, 'update']);
-    Routes.delete('/:id', [UserController, 'destroy']);
+  Router.group('/users', () => {
+    Router.get('/', [UserController, 'index']);
+    Router.post('/', [UserController, 'create']);
+    Router.get('/:id', [UserController, 'show']);
+    Router.put('/:id', [UserController, 'update']);
+    Router.delete('/:id', [UserController, 'destroy']);
   });
 };
 
@@ -498,7 +498,7 @@ const validate = (schema) => (req, res, next) => {
   /* ... */ next();
 };
 
-Routes.post(
+Router.post(
   '/admin/users',
   [AdminController, 'create'],
   [authenticate, authorize('admin'), validate(userSchema)],
@@ -509,7 +509,7 @@ Routes.post(
 
 ```javascript
 // Always use try-catch in async handlers
-Routes.get('/users/:id', async ({ req, res, next }) => {
+Router.get('/users/:id', async ({ req, res, next }) => {
   try {
     const user = await User.findById(req.params.id);
     res.json(user);

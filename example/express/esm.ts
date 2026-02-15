@@ -1,4 +1,4 @@
-import Routes from '../../src/express/routes';
+import Router from '../../src/express/router';
 import express from 'express';
 
 const app = express();
@@ -19,7 +19,7 @@ const authMiddleware = (
     next();
 };
 
-Routes.get('/', ({ res }: { res: express.Response }) => {
+Router.get('/', ({ res }: { res: express.Response }) => {
     res.json({
         message: 'ESM Example Server',
         version: '2.0.2',
@@ -27,28 +27,28 @@ Routes.get('/', ({ res }: { res: express.Response }) => {
     });
 });
 
-Routes.group('/api', () => {
-    Routes.get('/hello', ({ res }: { res: express.Response }) => {
+Router.group('/api', () => {
+    Router.get('/hello', ({ res }: { res: express.Response }) => {
         res.json({ message: 'Hello from ESM!' });
     });
 
-    Routes.post('/echo', ({ req, res }: { req: express.Request, res: express.Response }) => {
+    Router.post('/echo', ({ req, res }: { req: express.Request, res: express.Response }) => {
         res.json({ echo: req.body });
     });
 
-    Routes.group('/users', () => {
-        Routes.get('/', ({ res }: { res: express.Response }) => {
+    Router.group('/users', () => {
+        Router.get('/', ({ res }: { res: express.Response }) => {
             res.json({ users: ['Alice', 'Bob', 'Charlie'] });
         });
 
-        Routes.get('/:id', ({ req, res }: { req: express.Request, res: express.Response }) => {
+        Router.get('/:id', ({ req, res }: { req: express.Request, res: express.Response }) => {
             res.json({ id: req.params.id, name: 'User ' + req.params.id });
         });
     });
 });
 
-Routes.middleware([authMiddleware], () => {
-    Routes.get('/protected', ({ res }: { res: express.Response }) => {
+Router.middleware([authMiddleware], () => {
+    Router.get('/protected', ({ res }: { res: express.Response }) => {
         res.json({ message: 'This is protected', access: 'granted' });
     });
 });
@@ -63,10 +63,10 @@ class DataController {
     }
 }
 
-Routes.get('/data', [DataController, 'getData']);
+Router.get('/data', [DataController, 'getData']);
 
-Routes.get('/routes', ({ res }: { res: express.Response }) => {
-    const allRoutes = Routes.allRoutes();
+Router.get('/routes', ({ res }: { res: express.Response }) => {
+    const allRoutes = Router.allRoutes();
     res.json({
         total: allRoutes.length,
         routes: allRoutes
@@ -74,7 +74,7 @@ Routes.get('/routes', ({ res }: { res: express.Response }) => {
 });
 
 (() => {
-    Routes.apply(router);
+    Router.apply(router);
     app.use(router);
 
     app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -87,7 +87,7 @@ Routes.get('/routes', ({ res }: { res: express.Response }) => {
     app.listen(PORT, () => {
         console.log(`ESM Server running at http://localhost:${PORT}`);
         console.log('\nAvailable routes:');
-        Routes.allRoutes().forEach(route => {
+        Router.allRoutes().forEach(route => {
             console.log(`  ${route.methods.join(', ').toUpperCase()} ${route.path}`);
         });
     });

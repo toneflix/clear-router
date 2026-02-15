@@ -1,6 +1,6 @@
 # Testing Guide
 
-Comprehensive testing guide for @refkinscallv/express-routing
+Comprehensive testing guide for clear-router
 
 ## Table of Contents
 
@@ -157,10 +157,10 @@ describe('Express Routing - CommonJS', () => {
 
   beforeEach(() => {
     // Reset routes before each test
-    Routes.routes = [];
-    Routes.prefix = '';
-    Routes.groupMiddlewares = [];
-    Routes.globalMiddlewares = [];
+    Router.routes = [];
+    Router.prefix = '';
+    Router.groupMiddlewares = [];
+    Router.globalMiddlewares = [];
 
     app = express();
     router = express.Router();
@@ -168,12 +168,12 @@ describe('Express Routing - CommonJS', () => {
   });
 
   afterEach(() => {
-    Routes.apply(router);
+    Router.apply(router);
     app.use(router);
   });
 
   test('should register and handle GET route', async () => {
-    Routes.get('/test', ({ res }) => {
+    Router.get('/test', ({ res }) => {
       res.json({ message: 'success' });
     });
 
@@ -188,7 +188,7 @@ describe('Express Routing - CommonJS', () => {
       next();
     };
 
-    Routes.get(
+    Router.get(
       '/middleware-test',
       ({ req, res }) => {
         res.json({ value: req.customValue });
@@ -201,8 +201,8 @@ describe('Express Routing - CommonJS', () => {
   });
 
   test('should handle route groups', async () => {
-    Routes.group('/api', () => {
-      Routes.get('/users', ({ res }) => {
+    Router.group('/api', () => {
+      Router.get('/users', ({ res }) => {
         res.json({ route: 'users' });
       });
     });
@@ -219,14 +219,14 @@ describe('Express Routing - CommonJS', () => {
       }
     }
 
-    Routes.get('/controller', [TestController, 'index']);
+    Router.get('/controller', [TestController, 'index']);
 
     const response = await request(app).get('/controller');
     expect(response.body.controller).toBe('static');
   });
 
   test('should handle errors properly', async () => {
-    Routes.get('/error', () => {
+    Router.get('/error', () => {
       throw new Error('Test error');
     });
 
@@ -240,10 +240,10 @@ describe('Express Routing - CommonJS', () => {
   });
 
   test('should return all routes info', () => {
-    Routes.get('/route1', ({ res }) => res.send('ok'));
-    Routes.post('/route2', ({ res }) => res.send('ok'));
+    Router.get('/route1', ({ res }) => res.send('ok'));
+    Router.post('/route2', ({ res }) => res.send('ok'));
 
-    const allRoutes = Routes.allRoutes();
+    const allRoutes = Router.allRoutes();
     expect(allRoutes).toHaveLength(2);
     expect(allRoutes[0].methods).toContain('get');
     expect(allRoutes[0].path).toBe('/route1');
@@ -261,17 +261,17 @@ File: `tests/esm.test.mjs`
 ```javascript
 import request from 'supertest';
 import express from 'express';
-import Routes from '../src/routes.mjs';
+import Router from '../src/routes.mjs';
 
 describe('Express Routing - ESM', () => {
   let app;
   let router;
 
   beforeEach(() => {
-    Routes.routes = [];
-    Routes.prefix = '';
-    Routes.groupMiddlewares = [];
-    Routes.globalMiddlewares = [];
+    Router.routes = [];
+    Router.prefix = '';
+    Router.groupMiddlewares = [];
+    Router.globalMiddlewares = [];
 
     app = express();
     router = express.Router();
@@ -279,12 +279,12 @@ describe('Express Routing - ESM', () => {
   });
 
   afterEach(async () => {
-    await Routes.apply(router);
+    await Router.apply(router);
     app.use(router);
   });
 
   test('should register GET route with ESM', async () => {
-    Routes.get('/esm-test', ({ res }) => {
+    Router.get('/esm-test', ({ res }) => {
       res.json({ module: 'esm' });
     });
 
@@ -294,7 +294,7 @@ describe('Express Routing - ESM', () => {
   });
 
   test('should handle async handlers', async () => {
-    Routes.get('/async', async ({ res }) => {
+    Router.get('/async', async ({ res }) => {
       await new Promise((resolve) => setTimeout(resolve, 10));
       res.json({ async: true });
     });
@@ -304,7 +304,7 @@ describe('Express Routing - ESM', () => {
   });
 
   test('should support multiple methods', async () => {
-    Routes.add(['get', 'post'], '/multi', ({ req, res }) => {
+    Router.add(['get', 'post'], '/multi', ({ req, res }) => {
       res.json({ method: req.method });
     });
 
@@ -340,17 +340,17 @@ File: `tests/typescript.test.ts`
 ```typescript
 import request from 'supertest';
 import express, { Router } from 'express';
-import Routes, { HttpContext, RouteInfo } from '../types/index';
+import Router, { HttpContext, RouteInfo } from '../types/index';
 
 describe('Express Routing - TypeScript', () => {
   let app: express.Application;
   let router: Router;
 
   beforeEach(() => {
-    Routes.routes = [];
-    Routes.prefix = '';
-    Routes.groupMiddlewares = [];
-    Routes.globalMiddlewares = [];
+    Router.routes = [];
+    Router.prefix = '';
+    Router.groupMiddlewares = [];
+    Router.globalMiddlewares = [];
 
     app = express();
     router = Router();
@@ -358,12 +358,12 @@ describe('Express Routing - TypeScript', () => {
   });
 
   afterEach(async () => {
-    await Routes.apply(router);
+    await Router.apply(router);
     app.use(router);
   });
 
   test('should work with TypeScript types', async () => {
-    Routes.get('/typescript', ({ req, res }: HttpContext) => {
+    Router.get('/typescript', ({ req, res }: HttpContext) => {
       res.json({ typed: true });
     });
 
@@ -372,9 +372,9 @@ describe('Express Routing - TypeScript', () => {
   });
 
   test('should type check route info', () => {
-    Routes.get('/info', ({ res }: HttpContext) => res.send('ok'));
+    Router.get('/info', ({ res }: HttpContext) => res.send('ok'));
 
-    const routes: RouteInfo[] = Routes.allRoutes();
+    const routes: RouteInfo[] = Router.allRoutes();
     expect(routes[0].path).toBe('/info');
     expect(routes[0].handlerType).toBe('function');
   });
@@ -386,7 +386,7 @@ describe('Express Routing - TypeScript', () => {
       }
     }
 
-    Routes.get('/users', [UserController, 'index']);
+    Router.get('/users', [UserController, 'index']);
 
     const response = await request(app).get('/users');
     expect(response.body.users).toEqual([]);
@@ -402,7 +402,7 @@ describe('Express Routing - TypeScript', () => {
       next();
     };
 
-    Routes.post(
+    Router.post(
       '/auth',
       ({ req, res }: HttpContext) => {
         res.json({ auth: req.body.authenticated });
@@ -435,7 +435,7 @@ npx ts-node tests/typescript.test.ts
 ```javascript
 const request = require('supertest');
 const express = require('express');
-const Routes = require('@refkinscallv/express-routing');
+const Routes = require('clear-router');
 
 describe('My Custom Tests', () => {
   let app;
@@ -443,10 +443,10 @@ describe('My Custom Tests', () => {
 
   beforeEach(() => {
     // Reset Routes state
-    Routes.routes = [];
-    Routes.prefix = '';
-    Routes.groupMiddlewares = [];
-    Routes.globalMiddlewares = [];
+    Router.routes = [];
+    Router.prefix = '';
+    Router.groupMiddlewares = [];
+    Router.globalMiddlewares = [];
 
     // Create fresh Express app and router
     app = express();
@@ -456,13 +456,13 @@ describe('My Custom Tests', () => {
 
   afterEach(async () => {
     // Apply routes after each test
-    await Routes.apply(router);
+    await Router.apply(router);
     app.use(router);
   });
 
   test('your test description', async () => {
     // Define routes
-    Routes.get('/test', ({ res }) => {
+    Router.get('/test', ({ res }) => {
       res.json({ success: true });
     });
 
@@ -506,11 +506,11 @@ test('should execute middlewares in correct order', async () => {
     next();
   };
 
-  Routes.middleware([mw1], () => {
-    Routes.group(
+  Router.middleware([mw1], () => {
+    Router.group(
       '/api',
       () => {
-        Routes.get(
+        Router.get(
           '/test',
           ({ res }) => {
             res.json({ order });
@@ -531,7 +531,7 @@ test('should execute middlewares in correct order', async () => {
 
 ```javascript
 test('should pass errors to Express error handler', async () => {
-  Routes.get('/error', () => {
+  Router.get('/error', () => {
     throw new Error('Custom error');
   });
 
@@ -597,10 +597,10 @@ If tests are affecting each other, make sure you're resetting Routes state:
 
 ```javascript
 beforeEach(() => {
-  Routes.routes = [];
-  Routes.prefix = '';
-  Routes.groupMiddlewares = [];
-  Routes.globalMiddlewares = [];
+  Router.routes = [];
+  Router.prefix = '';
+  Router.groupMiddlewares = [];
+  Router.globalMiddlewares = [];
 });
 ```
 

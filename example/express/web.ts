@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import Route from "../../src/express/routes";
+import Route from "../../src/express/router";
 
 function pickRequestFields (req: Request) {
     return {

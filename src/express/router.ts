@@ -1,7 +1,7 @@
 import { ControllerAction, HttpMethod, RouteInfo } from "../../types/basic";
 import { Handler, Middleware } from "../../types/express";
 
-import { Router } from "express";
+import { Router as ExpressRouter } from "express";
 
 /**
  * @class clear-router
@@ -10,7 +10,7 @@ import { Router } from "express";
  * @author 3m1n3nc3
  * @repository https://github.com/toneflix/clear-router
  */
-export default class Routes {
+export class Router {
     /**
      * All registered routes
      */
@@ -236,9 +236,9 @@ export default class Routes {
      * 
      * @param router - Express Router instance
      */
-    static apply (router: Router): void
-    static async apply (router: Router): Promise<void>
-    static async apply (router: Router): Promise<void> {
+    static apply (router: ExpressRouter): void
+    static async apply (router: ExpressRouter): Promise<void>
+    static async apply (router: ExpressRouter): Promise<void> {
         for (const route of this.routes) {
             let handlerFunction = null
 
@@ -314,4 +314,6 @@ export default class Routes {
             }
         }
     }
-} 
+}
+
+export default Router

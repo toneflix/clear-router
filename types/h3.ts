@@ -1,6 +1,6 @@
-import { H3, H3Event, TypedServerRequest } from 'h3';
+import type { H3, H3Event, TypedServerRequest } from 'h3';
 
-import { ControllerHandler } from './basic';
+import type { ControllerHandler } from './basic';
 
 export type H3App = Omit<H3['fetch'], 'fetch'> & { fetch: (request: TypedServerRequest) => Promise<Response> }
 
@@ -28,4 +28,4 @@ export type NextFunction = () => MaybePromise<unknown | undefined>;
 /**
  * Middleware function type
  */
-export { Middleware } from "h3";
+export type { Middleware } from "h3";

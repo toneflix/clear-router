@@ -1,11 +1,23 @@
-# @refkinscallv/express-routing
+# Toneflix Clear Router
 
 Laravel-style routing system for Express.js in JavaScript. Clean route definitions, middleware support, and controller bindings with full TypeScript support.
 
 ## Installation
 
 ```bash
-npm install @refkinscallv/express-routing
+npm install clear-router
+```
+
+OR
+
+```bash
+pnpm add clear-router
+```
+
+OR
+
+```bash
+yarn add clear-router
 ```
 
 ## Features
@@ -27,16 +39,16 @@ npm install @refkinscallv/express-routing
 
 ```javascript
 const express = require('express');
-const Routes = require('@refkinscallv/express-routing');
+const Routes = require('clear-router');
 
 const app = express();
 const router = express.Router();
 
-Routes.get('/hello', ({ res }) => {
+Router.get('/hello', ({ res }) => {
   res.send('Hello World');
 });
 
-Routes.apply(router);
+Router.apply(router);
 app.use(router);
 
 app.listen(3000);
@@ -46,16 +58,16 @@ app.listen(3000);
 
 ```javascript
 import express from 'express';
-import Routes from '@refkinscallv/express-routing';
+import Router from 'clear-router';
 
 const app = express();
 const router = express.Router();
 
-Routes.get('/hello', ({ res }) => {
+Router.get('/hello', ({ res }) => {
   res.send('Hello World');
 });
 
-await Routes.apply(router);
+await Router.apply(router);
 app.use(router);
 
 app.listen(3000);
@@ -65,16 +77,16 @@ app.listen(3000);
 
 ```typescript
 import express from 'express';
-import Routes from '@refkinscallv/express-routing';
+import Router from 'clear-router';
 
 const app = express();
 const router = express.Router();
 
-Routes.get('/hello', ({ res }) => {
+Router.get('/hello', ({ res }) => {
   res.send('Hello World');
 });
 
-await Routes.apply(router);
+await Router.apply(router);
 app.use(router);
 
 app.listen(3000);
@@ -85,7 +97,7 @@ app.listen(3000);
 ### Basic Route
 
 ```javascript
-Routes.get('/hello', ({ res }) => {
+Router.get('/hello', ({ res }) => {
   res.send('Hello World');
 });
 ```
@@ -98,7 +110,7 @@ const authMiddleware = (req, res, next) => {
   next();
 };
 
-Routes.post('/secure', ({ res }) => res.send('Protected'), [authMiddleware]);
+Router.post('/secure', ({ res }) => res.send('Protected'), [authMiddleware]);
 ```
 
 ### Controller Binding
@@ -110,7 +122,7 @@ class UserController {
   }
 }
 
-Routes.get('/users', [UserController, 'index']);
+Router.get('/users', [UserController, 'index']);
 ```
 
 Class-based handlers will auto-bind to static or instance methods.
@@ -118,31 +130,35 @@ Class-based handlers will auto-bind to static or instance methods.
 ### Grouped Routes
 
 ```javascript
-Routes.group('/admin', () => {
-  Routes.get('/dashboard', ({ res }) => res.send('Admin Panel'));
+Router.group('/admin', () => {
+  Router.get('/dashboard', ({ res }) => res.send('Admin Panel'));
 });
 ```
 
 With middleware:
 
 ```javascript
-Routes.group('/secure', () => {
-  Routes.get('/data', ({ res }) => res.send('Secure Data'));
-}, [authMiddleware]);
+Router.group(
+  '/secure',
+  () => {
+    Router.get('/data', ({ res }) => res.send('Secure Data'));
+  },
+  [authMiddleware],
+);
 ```
 
 ### Global Middleware Scope
 
 ```javascript
-Routes.middleware([authMiddleware], () => {
-  Routes.get('/profile', ({ res }) => res.send('My Profile'));
+Router.middleware([authMiddleware], () => {
+  Router.get('/profile', ({ res }) => res.send('My Profile'));
 });
 ```
 
 ### Multiple HTTP Methods
 
 ```javascript
-Routes.add(['get', 'post'], '/handle', ({ req, res }) => {
+Router.add(['get', 'post'], '/handle', ({ req, res }) => {
   res.send(`Method: ${req.method}`);
 });
 ```
@@ -150,10 +166,10 @@ Routes.add(['get', 'post'], '/handle', ({ req, res }) => {
 ### Inspecting Routes
 
 ```javascript
-Routes.get('/hello', ({ res }) => res.send('Hello'));
-Routes.post('/world', ({ res }) => res.send('World'));
+Router.get('/hello', ({ res }) => res.send('Hello'));
+Router.post('/world', ({ res }) => res.send('World'));
 
-const allRoutes = Routes.allRoutes();
+const allRoutes = Router.allRoutes();
 console.log(allRoutes);
 // Output:
 // [

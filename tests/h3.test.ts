@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest"
 
 import { H3 } from 'h3'
 import { H3App } from 'types/h3'
-import Routes from "../src/h3/routes"
+import Router from "../src/h3/router"
 
 describe('H3 App (JS)', () => {
     let app: H3
@@ -13,7 +13,7 @@ describe('H3 App (JS)', () => {
     beforeAll(() => {
         app = new H3();
 
-        router = Routes.apply(app)
+        router = Router.apply(app)
     })
 
     it('GET / should return 200', async () => {

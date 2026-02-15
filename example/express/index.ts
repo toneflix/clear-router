@@ -1,6 +1,6 @@
 import "./web";
 
-import Routes from "../../src/express/routes";
+import Router from "../../src/express/router";
 import express from "express";
 
 const PORT = process.env.PORT || 3000;
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 (async () => {
-    Routes.apply(router);
+    Router.apply(router);
     app.use(router);
 
     app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
     app.listen(PORT, () => {
         console.log(`Server is running at http://localhost:${PORT}`);
         console.log('\nAvailable routes:');
-        const routes = Routes.allRoutes();
+        const routes = Router.allRoutes();
         routes.forEach(route => {
             console.log(`  ${route.methods.join(', ').toUpperCase()} ${route.path}`);
         });

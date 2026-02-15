@@ -9,7 +9,7 @@ import { type H3 } from "h3";
  * @author 3m1n3nc3
  * @repository https://github.com/toneflix/clear-router
  */
-export default class Routes {
+export class Router {
     /**
      * All registered routes
      */
@@ -311,4 +311,6 @@ export default class Routes {
 
         return app as never
     }
-} 
+}
+
+export default Router

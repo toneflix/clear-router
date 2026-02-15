@@ -2,7 +2,7 @@ import '../example/express/web'
 
 import { beforeAll, describe, expect, it } from "vitest"
 
-import Routes from "../src/express/routes"
+import Router from "../src/express/router"
 import express from "express"
 import request from "supertest"
 
@@ -12,7 +12,7 @@ describe('Express App (JS)', () => {
     beforeAll(() => {
         app = express()
         const router = express.Router()
-        Routes.apply(router)
+        Router.apply(router)
         app.use(router)
     })
 

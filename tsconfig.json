@@ -15,9 +15,9 @@
     "types": ["node", "vitest", "express"],
     "baseUrl": ".",
     "paths": {
-      "clear-router/express": ["src/express/routes.ts"],
+      "clear-router/express": ["src/express/router.ts"],
       "clear-router/express/*": ["src/express/*"],
-      "clear-router/h3": ["src/h3/routes.ts"],
+      "clear-router/h3": ["src/h3/router.ts"],
       "clear-router/h3/*": ["src/h3/*"]
     }
   },

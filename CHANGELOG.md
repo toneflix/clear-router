@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4] - 2026-02-15
+
+### Changed
+
+- Changed all instances of `Routes` to `Router` in test files for Express and H3.
+- Updated the routing logic to use a new `Router` class for both Express and H3.
+- Refactored the structure of the router to improve clarity and maintainability.
+- Adjusted TypeScript definitions and paths in `tsconfig.json` and `tsdown.config.ts` to reflect the new router structure.
+
+### Added
+
+- Added new router implementation files for Express and H3.
+- Ensured all tests pass with the new router structure.
+
 ## [2.0.3] - 2026-02-15
 
 ### Changed
@@ -26,8 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **BREAKING FIX**: CommonJS import no longer requires `.default` property
-  - Before: `const Routes = require('@refkinscallv/express-routing'); Routes.default.get()`
-  - After: `const Routes = require('@refkinscallv/express-routing'); Routes.get()`
+  - Before: `const Routes = require('clear-router'); Router.default.get()`
+  - After: `const Routes = require('clear-router'); Router.get()`
 - Improved CommonJS export compatibility for better developer experience
 - Added dual export support (`module.exports` and `module.exports.default`) for maximum compatibility
 
@@ -176,15 +190,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 In version 2.0.1, CommonJS users had to use:
 
 ```javascript
-const Routes = require('@refkinscallv/express-routing');
-Routes.default.get('/path', handler); // Awkward!
+const Routes = require('clear-router');
+Router.default.get('/path', handler); // Awkward!
 ```
 
 Now in 2.0.2, the natural syntax works:
 
 ```javascript
-const Routes = require('@refkinscallv/express-routing');
-Routes.get('/path', handler); // Clean!
+const Routes = require('clear-router');
+Router.get('/path', handler); // Clean!
 ```
 
 **Migration**: Simply remove `.default` from your CommonJS imports. Your code will be cleaner and more intuitive.
@@ -238,15 +252,15 @@ This is a minor fix release that improves the CommonJS import experience.
 **Before (2.0.1):**
 
 ```javascript
-const Routes = require('@refkinscallv/express-routing');
-Routes.default.get('/users', handler);
+const Routes = require('clear-router');
+Router.default.get('/users', handler);
 ```
 
 **After (2.0.2):**
 
 ```javascript
-const Routes = require('@refkinscallv/express-routing');
-Routes.get('/users', handler); // Much better!
+const Routes = require('clear-router');
+Router.get('/users', handler); // Much better!
 ```
 
 #### No Changes Needed for ESM or TypeScript
@@ -255,14 +269,14 @@ ESM and TypeScript imports continue to work exactly the same:
 
 ```javascript
 // ESM - No changes
-import Routes from '@refkinscallv/express-routing';
-Routes.get('/users', handler);
+import Router from 'clear-router';
+Router.get('/users', handler);
 ```
 
 ```typescript
 // TypeScript - No changes
-import Routes from '@refkinscallv/express-routing';
-Routes.get('/users', handler);
+import Router from 'clear-router';
+Router.get('/users', handler);
 ```
 
 ### From 1.x to 2.0.x
@@ -270,7 +284,7 @@ Routes.get('/users', handler);
 #### 1. Update Dependencies
 
 ```bash
-npm install @refkinscallv/express-routing@latest express@^5.1.0
+npm install clear-router@latest express@^5.1.0
 ```
 
 #### 2. Update Node.js
@@ -291,12 +305,12 @@ Your existing route definitions work without modification:
 
 ```javascript
 // This still works exactly the same
-Routes.get('/users', ({ res }) => {
+Router.get('/users', ({ res }) => {
   res.json({ users: [] });
 });
 
-Routes.group('/api', () => {
-  Routes.post('/data', handler);
+Router.group('/api', () => {
+  Router.post('/data', handler);
 });
 ```
 
@@ -305,9 +319,9 @@ Routes.group('/api', () => {
 #### CommonJS (Default)
 
 ```javascript
-const Routes = require('@refkinscallv/express-routing');
+const Routes = require('clear-router');
 
-Routes.get('/test', ({ res }) => {
+Router.get('/test', ({ res }) => {
   res.json({ message: 'CommonJS works!' });
 });
 ```
@@ -315,9 +329,9 @@ Routes.get('/test', ({ res }) => {
 #### ESM
 
 ```javascript
-import Routes from '@refkinscallv/express-routing';
+import Router from 'clear-router';
 
-Routes.get('/test', ({ res }) => {
+Router.get('/test', ({ res }) => {
   res.json({ message: 'ESM works!' });
 });
 ```
@@ -325,10 +339,10 @@ Routes.get('/test', ({ res }) => {
 #### TypeScript
 
 ```typescript
-import Routes from '@refkinscallv/express-routing';
-import type { HttpContext } from '@refkinscallv/express-routing';
+import Router from 'clear-router';
+import type { HttpContext } from 'clear-router';
 
-Routes.get('/test', ({ res }: HttpContext) => {
+Router.get('/test', ({ res }: HttpContext) => {
   res.json({ message: 'TypeScript works!' });
 });
 ```
@@ -338,10 +352,10 @@ Routes.get('/test', ({ res }: HttpContext) => {
 #### Route Inspection (Added in 2.0.1)
 
 ```javascript
-Routes.get('/users', handler);
-Routes.post('/users', handler);
+Router.get('/users', handler);
+Router.post('/users', handler);
 
-const routes = Routes.allRoutes();
+const routes = Router.allRoutes();
 console.log(routes);
 // [
 //   {
@@ -366,7 +380,7 @@ console.log(routes);
 - Route naming with `name()` method
 - URL generation from named routes
 - Route parameter constraints (regex patterns)
-- Resource routing helpers (`Routes.resource()`)
+- Resource routing helpers (`Router.resource()`)
 - Route prefixes for API versioning
 
 ### Planned for 2.2.0

@@ -1,9 +1,9 @@
-import { H3, H3Event } from "h3";
 import { beforeEach, describe, expect, test } from "vitest"
 
+import { H3 } from "h3";
 import { H3App } from 'types/h3';
-import H3Routes from '../src/h3/routes';
-import Routes from "../src/express/routes";
+import H3Router from '../src/h3/router';
+import Router from "../src/express/router";
 import express from 'express';
 import request from 'supertest';
 
@@ -12,10 +12,10 @@ describe('Express Routing - ESM', () => {
     let router: express.Router;
 
     beforeEach(() => {
-        Routes.routes = [];
-        Routes.prefix = '';
-        Routes.groupMiddlewares = [];
-        Routes.globalMiddlewares = [];
+        Router.routes = [];
+        Router.prefix = '';
+        Router.groupMiddlewares = [];
+        Router.globalMiddlewares = [];
 
         app = express();
         router = express.Router();
@@ -23,12 +23,12 @@ describe('Express Routing - ESM', () => {
     });
 
     const setupApp = async () => {
-        await Routes.apply(router);
+        await Router.apply(router);
         app.use(router);
     };
 
     test('should register GET route with ESM', async () => {
-        Routes.get('/esm-test', ({ res }) => {
+        Router.get('/esm-test', ({ res }) => {
             res.json({ module: 'esm' });
         });
 
@@ -40,7 +40,7 @@ describe('Express Routing - ESM', () => {
     });
 
     test('should handle async handlers', async () => {
-        Routes.get('/async', async ({ res }) => {
+        Router.get('/async', async ({ res }) => {
             await new Promise(resolve => setTimeout(resolve, 10));
             res.json({ async: true });
         });
@@ -52,7 +52,7 @@ describe('Express Routing - ESM', () => {
     });
 
     test('should support multiple methods', async () => {
-        Routes.add(['get', 'post'], '/multi', ({ req, res }) => {
+        Router.add(['get', 'post'], '/multi', ({ req, res }) => {
             res.json({ method: req.method });
         });
 
@@ -84,7 +84,7 @@ describe('Express Routing - ESM', () => {
             }
         }
 
-        Routes.apiResource('/users', UserController);
+        Router.apiResource('/users', UserController);
 
         setupApp();
 
@@ -116,7 +116,7 @@ describe('Express Routing - ESM', () => {
             }
         }
 
-        Routes.get('/users', [UserController, 'list']);
+        Router.get('/users', [UserController, 'list']);
 
         await setupApp();
 
@@ -125,9 +125,9 @@ describe('Express Routing - ESM', () => {
     });
 
     test('should handle grouped routes in ESM', async () => {
-        Routes.group('/api', () => {
-            Routes.group('/v2', () => {
-                Routes.get('/status', ({ res }) => {
+        Router.group('/api', () => {
+            Router.group('/v2', () => {
+                Router.get('/status', ({ res }) => {
                     res.json({ version: 2, status: 'ok' });
                 });
             });
@@ -140,10 +140,10 @@ describe('Express Routing - ESM', () => {
     });
 
     test('should return route information', async () => {
-        Routes.get('/info1', ({ res }) => void res.send('ok'));
-        Routes.post('/info2', ({ res }) => void res.send('ok'));
+        Router.get('/info1', ({ res }) => void res.send('ok'));
+        Router.post('/info2', ({ res }) => void res.send('ok'));
 
-        const routes = Routes.allRoutes();
+        const routes = Router.allRoutes();
         expect(routes).toHaveLength(2);
         expect(routes[0].handlerType).toBe('function');
     });
@@ -154,20 +154,20 @@ describe('H3 Routing - ESM', () => {
     let router: H3App
 
     beforeEach(() => {
-        H3Routes.routes = [];
-        H3Routes.prefix = '';
-        H3Routes.groupMiddlewares = [];
-        H3Routes.globalMiddlewares = [];
+        H3Router.routes = [];
+        H3Router.prefix = '';
+        H3Router.groupMiddlewares = [];
+        H3Router.globalMiddlewares = [];
 
         app = new H3();
     });
 
     const setupApp = () => {
-        router = H3Routes.apply(app);
+        router = H3Router.apply(app);
     };
 
     test('should register GET route with ESM', async () => {
-        H3Routes.get('/esm-test', () => {
+        H3Router.get('/esm-test', () => {
             return { module: 'esm' };
         });
 
@@ -181,7 +181,7 @@ describe('H3 Routing - ESM', () => {
     });
 
     test('should handle async handlers', async () => {
-        H3Routes.get('/async', async ({ res }) => {
+        H3Router.get('/async', async ({ res }) => {
             await new Promise(resolve => setTimeout(resolve, 10));
             return { async: true };
         });
@@ -195,7 +195,7 @@ describe('H3 Routing - ESM', () => {
     });
 
     test('should support multiple methods', async () => {
-        H3Routes.add(['get', 'post'], '/multi', ({ req, res }) => {
+        H3Router.add(['get', 'post'], '/multi', ({ req, res }) => {
             return { method: req.method };
         });
 
@@ -231,7 +231,7 @@ describe('H3 Routing - ESM', () => {
             }
         }
 
-        H3Routes.apiResource('/users', UserController);
+        H3Router.apiResource('/users', UserController);
 
         setupApp();
 
@@ -263,7 +263,7 @@ describe('H3 Routing - ESM', () => {
             }
         }
 
-        H3Routes.get('/users', [UserController, 'list']);
+        H3Router.get('/users', [UserController, 'list']);
 
         setupApp();
 
@@ -274,9 +274,9 @@ describe('H3 Routing - ESM', () => {
     });
 
     test('should handle grouped routes in ESM', async () => {
-        H3Routes.group('/api', () => {
-            H3Routes.group('/v2', () => {
-                H3Routes.get('/status', ({ res }) => {
+        H3Router.group('/api', () => {
+            H3Router.group('/v2', () => {
+                H3Router.get('/status', ({ res }) => {
                     return { version: 2, status: 'ok' };
                 });
             });
@@ -291,10 +291,10 @@ describe('H3 Routing - ESM', () => {
     });
 
     test('should return route information', async () => {
-        H3Routes.get('/info1', () => 'ok');
-        H3Routes.post('/info2', () => 'ok');
+        H3Router.get('/info1', () => 'ok');
+        H3Router.post('/info2', () => 'ok');
 
-        const routes = Routes.allRoutes();
+        const routes = Router.allRoutes();
         expect(routes).toHaveLength(2);
         expect(routes[0].handlerType).toBe('function');
     });

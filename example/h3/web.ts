@@ -1,7 +1,7 @@
 import { H3Event, getQuery, getRouterParams } from "h3";
 
 import { NextFunction } from "types/h3";
-import Route from "../../src/h3/routes";
+import Route from "../../src/h3/router";
 
 function pickRequestFields (evt: H3Event) {
     return {

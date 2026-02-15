@@ -1,38 +1,39 @@
 import { H3, H3Event, HTTPError, getRouterParams } from 'h3';
-import type { HttpContext, RouteInfo } from '../types';
 import { beforeEach, describe, expect, test } from 'vitest';
-import express, { NextFunction, Request, Response, Router } from 'express';
+import express, { Router as ExRouter, NextFunction, Request, Response } from 'express';
 
 import { H3App } from 'types/h3';
 import { NextFunction as H3NextFunction } from '../types/h3';
-import H3Routes from '../src/h3/routes';
-import Routes from '../src/express/routes';
+import H3Router from '../src/h3/router';
+import { HttpContext } from 'types/express';
+import type { RouteInfo } from '../types';
+import Router from '../src/express/router';
 import request from 'supertest';
 
 // Import the actual CommonJS implementation
 
 describe('Express Routing - TypeScript', () => {
     let app: express.Application;
-    let router: Router;
+    let router: ExRouter;
 
     beforeEach(() => {
-        Routes.routes = [];
-        Routes.prefix = '';
-        Routes.groupMiddlewares = [];
-        Routes.globalMiddlewares = [];
+        Router.routes = [];
+        Router.prefix = '';
+        Router.groupMiddlewares = [];
+        Router.globalMiddlewares = [];
 
         app = express();
-        router = Router();
+        router = ExRouter();
         app.use(express.json());
     });
 
     const setupApp = async (): Promise<void> => {
-        await Routes.apply(router);
+        Router.apply(router);
         app.use(router);
     };
 
     test('should work with TypeScript types', async () => {
-        Routes.get('/typescript', ({ req, res }: HttpContext) => {
+        Router.get('/typescript', ({ req, res }: HttpContext) => {
             res.json({ typed: true, path: req.path });
         });
 
@@ -43,14 +44,14 @@ describe('Express Routing - TypeScript', () => {
     });
 
     test('should type check route info', async () => {
-        Routes.get('/info', ({ res }: HttpContext) => {
+        Router.get('/info', ({ res }: HttpContext) => {
             res.send('ok')
         });
-        Routes.post('/create', ({ res }: HttpContext) => {
+        Router.post('/create', ({ res }: HttpContext) => {
             res.send('created')
         });
 
-        const routes: RouteInfo[] = Routes.allRoutes();
+        const routes: RouteInfo[] = Router.allRoutes();
         expect(routes[0].path).toBe('/info');
         expect(routes[0].handlerType).toBe('function');
         expect(routes[1].methods).toContain('post');
@@ -67,8 +68,8 @@ describe('Express Routing - TypeScript', () => {
             }
         }
 
-        Routes.get('/users', [UserController, 'index']);
-        Routes.get('/users/:id', [UserController, 'show']);
+        Router.get('/users', [UserController, 'index']);
+        Router.get('/users/:id', [UserController, 'show']);
 
         await setupApp();
 
@@ -89,7 +90,7 @@ describe('Express Routing - TypeScript', () => {
             next();
         };
 
-        Routes.post('/auth', ({ req, res }: HttpContext) => {
+        Router.post('/auth', ({ req, res }: HttpContext) => {
             res.json({ auth: (req as any).authenticated });
         }, [authMiddleware]);
 
@@ -100,7 +101,7 @@ describe('Express Routing - TypeScript', () => {
     });
 
     test('should handle async TypeScript handlers', async () => {
-        Routes.get('/async-ts', async ({ res }: HttpContext) => {
+        Router.get('/async-ts', async ({ res }: HttpContext) => {
             await new Promise<void>(resolve => setTimeout(resolve, 10));
             res.json({ success: true });
         });
@@ -112,8 +113,8 @@ describe('Express Routing - TypeScript', () => {
     });
 
     test('should type check grouped routes', async () => {
-        Routes.group('/api', () => {
-            Routes.get('/status', ({ res }: HttpContext) => {
+        Router.group('/api', () => {
+            Router.get('/status', ({ res }: HttpContext) => {
                 res.json({ status: 'operational' });
             });
         });
@@ -133,7 +134,7 @@ describe('Express Routing - TypeScript', () => {
             next(new Error('Middleware error'));
         };
 
-        Routes.get('/error-mw', ({ res }: HttpContext) => {
+        Router.get('/error-mw', ({ res }: HttpContext) => {
             res.send('ok');
         }, [errorMiddleware]);
 
@@ -155,20 +156,20 @@ describe('H3 Routing - TypeScript', () => {
     let router: H3App
 
     beforeEach(() => {
-        H3Routes.routes = [];
-        H3Routes.prefix = '';
-        H3Routes.groupMiddlewares = [];
-        H3Routes.globalMiddlewares = [];
+        H3Router.routes = [];
+        H3Router.prefix = '';
+        H3Router.groupMiddlewares = [];
+        H3Router.globalMiddlewares = [];
 
         app = new H3();
     });
 
     const setupApp = () => {
-        router = H3Routes.apply(app);
+        router = H3Router.apply(app);
     };
 
     test('should work with TypeScript types', async () => {
-        H3Routes.get('/typescript', (ctx) => {
+        H3Router.get('/typescript', (ctx) => {
             return { typed: true, path: ctx.url.pathname };
         });
 
@@ -181,16 +182,16 @@ describe('H3 Routing - TypeScript', () => {
     });
 
     test('should type check route info', async () => {
-        H3Routes.get('/info', (ctx) => {
+        H3Router.get('/info', (ctx) => {
             ctx.res.status = 200;
             ctx.res.statusText = "OK";
         });
-        H3Routes.post('/create', (ctx) => {
+        H3Router.post('/create', (ctx) => {
             ctx.res.status = 201;
             ctx.res.statusText = "Created";
         });
 
-        const routes: RouteInfo[] = H3Routes.allRoutes();
+        const routes: RouteInfo[] = H3Router.allRoutes();
         expect(routes[0].path).toBe('/info');
         expect(routes[0].handlerType).toBe('function');
         expect(routes[1].methods).toContain('post');
@@ -207,8 +208,8 @@ describe('H3 Routing - TypeScript', () => {
             }
         }
 
-        H3Routes.get('/users', [UserController, 'index']);
-        H3Routes.get('/users/:id', [UserController, 'show']);
+        H3Router.get('/users', [UserController, 'index']);
+        H3Router.get('/users/:id', [UserController, 'show']);
 
         setupApp();
 
@@ -232,7 +233,7 @@ describe('H3 Routing - TypeScript', () => {
             next();
         };
 
-        H3Routes.post('/auth', async (event) => {
+        H3Router.post('/auth', async (event) => {
             return { auth: event.res.headers.get("Authorization") === "Bearer token" };
         }, [authMiddleware]);
 
@@ -245,7 +246,7 @@ describe('H3 Routing - TypeScript', () => {
     });
 
     test('should handle async TypeScript handlers', async () => {
-        H3Routes.get('/async-ts', async () => {
+        H3Router.get('/async-ts', async () => {
             await new Promise<void>(resolve => setTimeout(resolve, 10));
             return { success: true }
         });
@@ -259,8 +260,8 @@ describe('H3 Routing - TypeScript', () => {
     });
 
     test('should type check grouped routes', async () => {
-        H3Routes.group('/api', () => {
-            H3Routes.get('/status', () => {
+        H3Router.group('/api', () => {
+            H3Router.get('/status', () => {
                 return { status: 'operational' };
             });
         });
@@ -278,7 +279,7 @@ describe('H3 Routing - TypeScript', () => {
             throw new HTTPError("Middleware error", { status: 500 });
         };
 
-        H3Routes.get('/error-mw', () => {
+        H3Router.get('/error-mw', () => {
             return 'ok';
         }, [errorMiddleware]);
 

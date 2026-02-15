@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
-import { ControllerHandler } from './basic';
+import type { ControllerHandler } from './basic';
 
 /**
  * HTTP context passed to route handlers
