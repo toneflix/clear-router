@@ -1,6 +1,6 @@
 # Toneflix Clear Router
 
-Laravel-style routing system for Express.js in JavaScript. Clean route definitions, middleware support, and controller bindings with full TypeScript support.
+Laravel-style routing system for H3 and Express.js in JavaScript. Clean route definitions, middleware support, and controller bindings with full TypeScript support.
 
 ## Installation
 
@@ -41,8 +41,8 @@ yarn add clear-router express
 - Supports HttpContext style handlers: { req, res, next }
 - Auto-binds controller methods
 - Full CommonJS, ESM, and TypeScript support
-- Error handling delegated to Express
-- Route inspection with allRoutes method
+- Error handling delegated to Express | H3
+- Route inspection with the `allRoutes` method
 - Fully Express-compatible
 - Fully H3-compatible
 
@@ -59,17 +59,6 @@ See the [H3 documentation](./docs/H3.md) for details.
 ## API Reference
 
 See [API.md](./docs/API.md) for complete API documentation.
-
-## Error Handling
-
-All errors during route execution are automatically passed to Express error handling middleware using `next(error)`. You can define your error handler:
-
-```javascript
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: err.message });
-});
-```
 
 ## Middleware Execution Order
 
@@ -91,7 +80,7 @@ npm run test:esm      # Test ESM
 npm run test:ts       # Test TypeScript
 ```
 
-See [TESTING.md](./docs/TESTING.md) for detailed testing guide.
+See [TESTING.md](./docs/TESTING.md) for a detailed testing guide.
 
 ## Examples
 
@@ -101,7 +90,7 @@ npm run example:esm   # ESM example
 npm run example:ts    # TypeScript example
 ```
 
-Check `example/` directory for full working demos.
+Check the `example/` directory for full working demos.
 
 ## Changelog
 
