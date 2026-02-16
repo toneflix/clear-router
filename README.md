@@ -19,7 +19,7 @@ pnpm add clear-router h3
 
 # OR
 
-pnpm add clear-router hexpress3
+pnpm add clear-router express
 ```
 
 OR
