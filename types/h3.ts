@@ -9,7 +9,7 @@ export type MaybePromise<T = unknown> = T | Promise<T>;
 /**
  * HTTP context passed to route handlers
  */
-export type HttpContext = H3Event
+export interface HttpContext extends H3Event { }
 
 /**
  * Route handler function type
