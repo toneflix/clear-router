@@ -4,20 +4,32 @@ Laravel-style routing system for Express.js in JavaScript. Clean route definitio
 
 ## Installation
 
-```bash
-npm install clear-router
+```sh
+npm install clear-router h3
+
+# OR
+
+npm install clear-router express
 ```
 
 OR
 
 ```bash
-pnpm add clear-router
+pnpm add clear-router h3
+
+# OR
+
+pnpm add clear-router hexpress3
 ```
 
 OR
 
 ```bash
-yarn add clear-router
+yarn add clear-router h3
+
+# OR
+
+yarn add clear-router express
 ```
 
 ## Features
@@ -32,155 +44,21 @@ yarn add clear-router
 - Error handling delegated to Express
 - Route inspection with allRoutes method
 - Fully Express-compatible
+- Fully H3-compatible
 
 ## Quick Start
 
-### CommonJS
+### Express JS
 
-```javascript
-const express = require('express');
-const Routes = require('clear-router');
+See the [Express JS documentation](./docs/EXPRESS.md) for details.
 
-const app = express();
-const router = express.Router();
+### H3
 
-Router.get('/hello', ({ res }) => {
-  res.send('Hello World');
-});
-
-Router.apply(router);
-app.use(router);
-
-app.listen(3000);
-```
-
-### ESM
-
-```javascript
-import express from 'express';
-import Router from 'clear-router';
-
-const app = express();
-const router = express.Router();
-
-Router.get('/hello', ({ res }) => {
-  res.send('Hello World');
-});
-
-await Router.apply(router);
-app.use(router);
-
-app.listen(3000);
-```
-
-### TypeScript
-
-```typescript
-import express from 'express';
-import Router from 'clear-router';
-
-const app = express();
-const router = express.Router();
-
-Router.get('/hello', ({ res }) => {
-  res.send('Hello World');
-});
-
-await Router.apply(router);
-app.use(router);
-
-app.listen(3000);
-```
-
-## Usage Examples
-
-### Basic Route
-
-```javascript
-Router.get('/hello', ({ res }) => {
-  res.send('Hello World');
-});
-```
-
-### With Middleware
-
-```javascript
-const authMiddleware = (req, res, next) => {
-  // auth logic
-  next();
-};
-
-Router.post('/secure', ({ res }) => res.send('Protected'), [authMiddleware]);
-```
-
-### Controller Binding
-
-```javascript
-class UserController {
-  static index({ res }) {
-    res.send('User List');
-  }
-}
-
-Router.get('/users', [UserController, 'index']);
-```
-
-Class-based handlers will auto-bind to static or instance methods.
-
-### Grouped Routes
-
-```javascript
-Router.group('/admin', () => {
-  Router.get('/dashboard', ({ res }) => res.send('Admin Panel'));
-});
-```
-
-With middleware:
-
-```javascript
-Router.group(
-  '/secure',
-  () => {
-    Router.get('/data', ({ res }) => res.send('Secure Data'));
-  },
-  [authMiddleware],
-);
-```
-
-### Global Middleware Scope
-
-```javascript
-Router.middleware([authMiddleware], () => {
-  Router.get('/profile', ({ res }) => res.send('My Profile'));
-});
-```
-
-### Multiple HTTP Methods
-
-```javascript
-Router.add(['get', 'post'], '/handle', ({ req, res }) => {
-  res.send(`Method: ${req.method}`);
-});
-```
-
-### Inspecting Routes
-
-```javascript
-Router.get('/hello', ({ res }) => res.send('Hello'));
-Router.post('/world', ({ res }) => res.send('World'));
-
-const allRoutes = Router.allRoutes();
-console.log(allRoutes);
-// Output:
-// [
-//   { methods: ['get'], path: '/hello', middlewareCount: 0, handlerType: 'function' },
-//   { methods: ['post'], path: '/world', middlewareCount: 0, handlerType: 'function' }
-// ]
-```
+See the [H3 documentation](./docs/H3.md) for details.
 
 ## API Reference
 
-See [API.md](API.md) for complete API documentation.
+See [API.md](./docs/API.md) for complete API documentation.
 
 ## Error Handling
 
@@ -213,7 +91,7 @@ npm run test:esm      # Test ESM
 npm run test:ts       # Test TypeScript
 ```
 
-See [TESTING.md](TESTING.md) for detailed testing guide.
+See [TESTING.md](./docs/TESTING.md) for detailed testing guide.
 
 ## Examples
 
@@ -232,16 +110,16 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 ## Requirements
 
 - Node.js >= 14.0.0
-- Express >= 5.0.0
+- Express >= 5.0.0 | H3 >= 2.0.1
 
 ## License
 
-MIT License © 2026 Refkinscallv
+MIT License © 2026 ToneFlix Technologies Limited
 
 ## Author
 
-Refkinscallv <refkinscallv@gmail.com>
+3m1n3nce <3m1n3nce@toneflix.net>
 
 ## Repository
 
-https://github.com/refkinscallv/express-routing
+https://github.com/toneflix/clear-router

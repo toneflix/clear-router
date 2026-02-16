@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2026-02-16
+
+### Changed
+
+- Updated package.json to change router exports from "router" to "index" for express and h3.
+- Modified tsconfig.json paths to reflect new index file structure for express and h3.
+- Changed tsdown.config.ts entry points to use index files instead of router files.
+
+### Added
+
+- Added comprehensive API documentation in API.md covering static properties, methods, and types.
+- Created usage guides for Express and H3 in EXPRESS.md and H3.md respectively.
+- Introduced a detailed testing guide in TESTING.md, including setup, running tests, and best practices.
+- Added index.ts files for express and h3 to re-export router functionalities.
+
 ## [2.0.6] - 2026-02-15
 
 ### Changed
@@ -255,7 +270,7 @@ None at this time.
 
 ### Security
 
-No known security issues. Please report any security vulnerabilities to refkinscallv@gmail.com.
+No known security issues. Please report any security vulnerabilities to oss@toneflix.net.
 
 ## Migration Guide
 
@@ -418,13 +433,14 @@ console.log(routes);
 
 For questions, issues, or feature requests:
 
-- **GitHub Issues**: https://github.com/refkinscallv/express-routing/issues
-- **Email**: refkinscallv@gmail.com
+- **GitHub Issues**: https://github.com/toneflix/clear-router/issues
+- **Email**: oss@toneflix.net
 - **Documentation**: See API.md and TESTING.md
 
 ## Contributors
 
-- **Refkinscallv** - Creator and maintainer
+- **Refkinscallv** - Creator and maintainer of (express-router)[https://github.com/refkinscallv/express-routing]
+- **3m1n3nc3** - Creator and maintainer
 
 ## License
 
@@ -436,6 +452,10 @@ MIT License - see LICENSE file for details
 
 | Version | Release Date | Major Changes                              |
 | ------- | ------------ | ------------------------------------------ |
+| 2.0.6   | 2026-02-15   | Update entry points and configuration      |
+| 2.0.5   | 2026-02-15   | Fix know bugs                              |
+| 2.0.4   | 2026-02-15   | Minor refactoring and improvements         |
+| 2.0.3   | 2026-02-15   | Add support for H3                         |
 | 2.0.2   | 2026-01-09   | Fixed CommonJS import (no more `.default`) |
 | 2.0.1   | 2026-01-03   | Express 5, Node 22, Full ESM/TS support    |
 | 1.2.1   | 2025-12-15   | Basic ESM, TypeScript definitions          |

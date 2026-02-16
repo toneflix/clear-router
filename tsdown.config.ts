@@ -4,7 +4,7 @@ export default defineConfig([
   {
     exports: true,
     tsconfig: 'tsconfig.json',
-    entry: ['src/express/router.ts', 'src/h3/router.ts'],
+    entry: ['src/express/index.ts', 'src/h3/index.ts'],
     platform: 'node',
     outDir: 'dist',
     format: ['esm', 'cjs'],
