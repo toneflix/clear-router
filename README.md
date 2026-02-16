@@ -1,6 +1,6 @@
 # Toneflix Clear Router
 
-Laravel-style routing system for H3 and Express.js, with clean route definitions, middleware support, and controller bindings and full TypeScript support.
+Laravel-style routing system for H3 and Express.js, with clean route definitions, middleware support, controller bindings and full TypeScript support.
 
 ## Installation
 
